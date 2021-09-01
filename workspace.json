@@ -1,0 +1,361 @@
+{
+  "version": 2,
+  "projects": {
+    "days": {
+      "root": "libs/days",
+      "sourceRoot": "libs/days/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/days/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/days"],
+          "options": {
+            "jestConfig": "libs/days/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "kit": {
+      "root": "libs/kit",
+      "sourceRoot": "libs/kit/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/kit/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/kit"],
+          "options": {
+            "jestConfig": "libs/kit/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "ranger": {
+      "root": "libs/ranger",
+      "sourceRoot": "libs/ranger/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/ranger/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/ranger"],
+          "options": {
+            "jestConfig": "libs/ranger/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "store": {
+      "root": "apps/store",
+      "sourceRoot": "apps/store/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/web:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/store",
+            "index": "apps/store/src/index.html",
+            "main": "apps/store/src/main.tsx",
+            "polyfills": "apps/store/src/polyfills.ts",
+            "tsConfig": "apps/store/tsconfig.app.json",
+            "assets": ["apps/store/src/favicon.ico", "apps/store/src/assets"],
+            "styles": ["apps/store/src/styles.scss"],
+            "scripts": [],
+            "webpackConfig": "@nrwl/react/plugins/webpack"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/store/src/environments/environment.ts",
+                  "with": "apps/store/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/web:dev-server",
+          "options": {
+            "buildTarget": "store:build",
+            "hmr": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "store:build:production",
+              "hmr": false
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/store/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/store"],
+          "options": {
+            "jestConfig": "apps/store/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "store-e2e": {
+      "root": "apps/store-e2e",
+      "sourceRoot": "apps/store-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/store-e2e/cypress.json",
+            "tsConfig": "apps/store-e2e/tsconfig.e2e.json",
+            "devServerTarget": "store:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "store:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/store-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "triv-backend": {
+      "root": "apps/triv-backend",
+      "sourceRoot": "apps/triv-backend/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/triv-backend",
+            "main": "apps/triv-backend/src/main.ts",
+            "tsConfig": "apps/triv-backend/tsconfig.app.json",
+            "assets": ["apps/triv-backend/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/triv-backend/src/environments/environment.ts",
+                  "with": "apps/triv-backend/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "triv-backend:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/triv-backend/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/triv-backend"],
+          "options": {
+            "jestConfig": "apps/triv-backend/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "triv-front": {
+      "root": "apps/triv-front",
+      "sourceRoot": "apps/triv-front/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/web:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/triv-front",
+            "index": "apps/triv-front/src/index.html",
+            "main": "apps/triv-front/src/main.tsx",
+            "polyfills": "apps/triv-front/src/polyfills.ts",
+            "tsConfig": "apps/triv-front/tsconfig.app.json",
+            "assets": [
+              "apps/triv-front/src/favicon.ico",
+              "apps/triv-front/src/assets"
+            ],
+            "styles": ["apps/triv-front/src/styles.css"],
+            "scripts": [],
+            "webpackConfig": "@nrwl/react/plugins/webpack"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/triv-front/src/environments/environment.ts",
+                  "with": "apps/triv-front/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/web:dev-server",
+          "options": {
+            "buildTarget": "triv-front:build",
+            "hmr": true,
+            "proxyConfig": "apps/triv-front/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "triv-front:build:production",
+              "hmr": false
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/triv-front/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/triv-front"],
+          "options": {
+            "jestConfig": "apps/triv-front/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "triv-front-e2e": {
+      "root": "apps/triv-front-e2e",
+      "sourceRoot": "apps/triv-front-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/triv-front-e2e/cypress.json",
+            "tsConfig": "apps/triv-front-e2e/tsconfig.e2e.json",
+            "devServerTarget": "triv-front:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "triv-front:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/triv-front-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "users": {
+      "root": "libs/users",
+      "sourceRoot": "libs/users/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/users/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/users"],
+          "options": {
+            "jestConfig": "libs/users/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/react"
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint"
+      }
+    }
+  },
+  "defaultProject": "store"
+}

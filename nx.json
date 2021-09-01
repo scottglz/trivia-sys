@@ -1,0 +1,61 @@
+{
+  "npmScope": "trivia-nx",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    ".eslintrc.json": "*"
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "accessToken": "ZjY5ODFkN2QtY2I5YS00YTBhLThlY2QtM2MzMzFkNDllY2IyfHJlYWQtd3JpdGU="
+      }
+    }
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
+  },
+  "projects": {
+    "days": {
+      "tags": []
+    },
+    "kit": {
+      "tags": []
+    },
+    "ranger": {
+      "tags": []
+    },
+    "store": {
+      "tags": []
+    },
+    "store-e2e": {
+      "tags": [],
+      "implicitDependencies": ["store"]
+    },
+    "triv-backend": {
+      "tags": []
+    },
+    "triv-front": {
+      "tags": []
+    },
+    "triv-front-e2e": {
+      "tags": [],
+      "implicitDependencies": ["triv-front"]
+    },
+    "users": {
+      "tags": []
+    }
+  }
+}

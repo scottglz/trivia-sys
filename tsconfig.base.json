@@ -1,0 +1,25 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2017", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@kit": ["libs/kit/src/index.ts"],
+      "@trivia-nx/days": ["libs/days/src/index.ts"],
+      "@trivia-nx/ranger": ["libs/ranger/src/index.ts"],
+      "@trivia-nx/users": ["libs/users/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+   :root {
+      --color-bar: 0, 0, 0;
+      --color-bar-text: 255, 255, 255;
+      --color-bar-link: 200, 255, 200;
+   }
+
+   .theme-beethoven {
+      --color-bar: 240, 240, 255;
+      --color-bar-text: 0, 0, 0;
+      --color-bar-link: 128, 128, 196;
+   }
+
+   html {
+      font-size: 11pt;
+      font-family: 'Nunito', sans-serif;
+   }
+}
+
+@layer utilities {
+   .w-stream {
+      width: 800px;
+   }
+
+   .px-1\.5vw {
+      padding-left: 1.5vw;
+      padding-right: 1.5vw;
+   }
+
+   .vertical-rl {
+      writing-mode: vertical-rl;
+   }
+
+   
+
+   @variants responsive {
+      .template-columns-auto-180-1fr {
+         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+      .template-columns-100-180 {
+         grid-template-columns: repeat(100,180px);
+      }
+   }
+}
