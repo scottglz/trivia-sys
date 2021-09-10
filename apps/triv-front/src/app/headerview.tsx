@@ -25,14 +25,14 @@ function HeaderView() {
    const userViews = mainViews.filter(v => !!v.page && !!v.headerText && (user.userid || v.noUserOk || v.noUserOnly) && (!user.userid || !v.noUserOnly));
    const viewLinks = userViews.map(v => {
       const isSelected = mainview === v.name;
-      return <Link isSelected={isSelected} colorClass={isSelected ? 'text-bar' : 'text-bar-link'} href={v.page} key={v.name}>{v.headerText}</Link>;
+      return <Link isSelected={isSelected} href={v.page} key={v.name}>{v.headerText}</Link>;
    });
    let userControls;
    if (user.userid) {
-      userControls = [<span key="hello">{'Hello ' + user.username}</span>,<Link key="logout" colorClass="text-bar-link" onClick={onClickLogout}>Log out</Link>];
+      userControls = [<span key="hello">{'Hello ' + user.username}</span>,<Link key="logout" onClick={onClickLogout}>Log out</Link>];
    }
 
-   return <div className="bg-bar text-bar p-2 header flex justify-between">
+   return <div className="bg-bar text-bar p-2 header flex justify-between dark-area">
       <div className="flex gap-4">
          {viewLinks} 
       </div>

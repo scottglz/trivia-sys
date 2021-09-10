@@ -17,8 +17,9 @@ module.exports = {
   theme: {
     extend: {
       textColor: {
-        bar: withOpacity('--color-bar-text'),
-        'bar-link': withOpacity('--collor-bar-link')
+        'plain-color': withOpacity('--color-text'),
+        'link-color': withOpacity('--color-link'),
+        'link-hover-color': withOpacity('--color-link-hover')
       },
       backgroundColor: {
         bar: withOpacity('--color-bar')

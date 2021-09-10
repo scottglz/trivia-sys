@@ -1,7 +1,4 @@
-
-const mode = process.env.NODE_ENV;
-const dev = mode !== 'production';
-process.env.TAILWIND_MODE = dev ? 'watch' : 'build';
+process.env.TAILWIND_MODE = process.argv.join(' ').includes('build') ? 'build' : 'watch';
 
 module.exports = {
   plugins: {

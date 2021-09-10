@@ -2,12 +2,13 @@ import { default as React, Fragment, MouseEvent, useState } from 'react';
 import classNames from 'classnames';
 import { formatDateFancy } from '@trivia-nx/days';
 import { isUserActive, userFull } from '@trivia-nx/users';
-import { guess, question, questionPlus } from '../../types/question';
-
+import { questionPlus } from '../../types/question';
+import { GuessWire} from '@trivia-nx/types';
+import QuestionCard from '../questioncard';
 
 function UserAnswerDetails(props: {
    user: userFull,
-   guess: guess
+   guess: GuessWire
 }) {
    const {user, guess} = props;
    const classes = classNames('rounded shadow-md py-1 px-4 text-right', guess.correct === true && 'text-black bg-green-200', guess.correct === false && 'text-white bg-red-500');
@@ -20,17 +21,17 @@ function UserAnswerDetails(props: {
 }
 
 function QuestionDetails(props: {
-   question: question
+   question: questionPlus
 }) {
    const { question } = props;
    return ( 
-      <div className="flex flex-col justify-between text-black bg-wheat text-left rounded shadow-md p-4 col-start-1 col-span-2 row-start-1 row-span-3">
+      <QuestionCard className="col-start-1 col-span-2 row-start-1 row-span-3">
          <div>
             <div className="font-bold text-sm mb-2">{formatDateFancy(question.day)}</div>
             <div>{question.q}</div>
          </div>
          <div className="self-end italic text-right">{question.a}</div>
-      </div>   
+      </QuestionCard>   
    );
 }
 

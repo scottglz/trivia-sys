@@ -8,13 +8,15 @@ import { actions } from './app/action';
 import { mainViews } from './app/mainviews';
 import { io } from 'socket.io-client';
 import { setAuthenticationFailureHandler} from './app/ajax';
-import { rootStore, dispatch, reduxState } from './app/reduxstore';
-import { question, questionWithGuesses } from './app/types/question';
+import { rootStore, dispatch } from './app/reduxstore';
+import { QuestionWire } from '@trivia-nx/types';
 
 const localStorage = window.localStorage;
 const { setActiveUserId, setMainView, setMessagePageMessage, questionsLoaded } = actions;
 
 setAuthenticationFailureHandler(function() {
+   localStorage.removeItem('lastUserId');
+   localStorage.removeItem('lastUserName');
    dispatch(setActiveUserId(null, null));
    page.redirect('/');
 });
@@ -42,6 +44,12 @@ document.addEventListener('DOMContentLoaded', function () {
    page.start({
       click: true
    });
+
+   const lastUserId = +(localStorage.getItem('lastUserId') || '');
+   const lastUserName = localStorage.getItem('lastUserName');
+   if (lastUserId > 0 && lastUserName) {
+      dispatch(setActiveUserId(lastUserId, lastUserName));
+   }
    
    render(
       <StrictMode>
@@ -66,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
  
    const socket = io(ioUrl + '/');
 
-   socket.on('day_data', function(question: questionWithGuesses) {
+   socket.on('day_data', function(question: QuestionWire) {
       dispatch(questionsLoaded(question.day, question.day, [question]));
    });
 

@@ -4,12 +4,13 @@ import { formatDateFancy } from '@trivia-nx/days'
 import Button from './button';
 import TextInput from './textinput';
 import QuestionCard from './questioncard';
-import { guess, guessesMap, questionPlus } from '../types/question';
+import { guessesMap, questionPlus } from '../types/question';
+import { GuessWire } from '@trivia-nx/types';
 
 function GradingGuess(props: {
-   guess: guess,
+   guess: GuessWire,
    correct: boolean,
-   onChangeGrade: (guess: guess, correct: boolean) => void
+   onChangeGrade: (guess: GuessWire, correct: boolean) => void
 }) {
    const correct = props.correct;
    const guess = props.guess;
@@ -62,7 +63,7 @@ export class GradingQuestion extends React.Component<gradingQuestionProps, state
       });
    }
    
-   onChangeGrade(guess: guess, correct: boolean) {
+   onChangeGrade(guess: GuessWire, correct: boolean) {
       this.setState(state => {
          const newState = {} as state;
          if (!state.answer && correct) {
@@ -98,7 +99,8 @@ export class GradingQuestion extends React.Component<gradingQuestionProps, state
       
       const question = this.props.question;
       const answer = this.state.answer;
-      const ready = !!answer.trim() && !this.state.submitting && question.guesses.every(guess =>
+      const guesses = Object.values(question.guessesMap);
+      const ready = !!answer.trim() && !this.state.submitting && guesses.every(guess =>
          Object.prototype.hasOwnProperty.call(this.state.gradesById, guess.guessid)
       );
 
@@ -113,7 +115,7 @@ export class GradingQuestion extends React.Component<gradingQuestionProps, state
                <TextInput className="ml-3" value={answer} onChange={this.onEditInput}/>
             </div>    
             <div>
-               {question.guesses.map(guess => <GradingGuess key={guess.guessid} guess={guess} correct={this.state.gradesById[guess.guessid]} onChangeGrade={this.onChangeGrade}/>)}
+               {guesses.map(guess => <GradingGuess key={guess.guessid} guess={guess} correct={this.state.gradesById[guess.guessid]} onChangeGrade={this.onChangeGrade}/>)}
             </div>
             <div>
                <Button disabled={!ready} onClick={this.onSubmit}>Submit Grades</Button>

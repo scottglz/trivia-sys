@@ -13,7 +13,7 @@ function Button(props: {
          type={type}
          onClick={onClick}
          disabled={disabled}
-         className="bg-green-600 outline-none border-none py-0.5 px-4 text-white font-bold rounded-full shadow-md :hover:bg-green-400 active:bg-green-400 disabled:bg-gray-300 disabled:cursor-default disabled:shadow-none"
+         className="bg-green-700 outline-none border-none py-1.5 px-4 text-white font-bold rounded-full shadow-md :hover:bg-green-40 opacity-80 hover:opacity-100 disabled:opacity-25 transition-opacity duration-500 disabled:cursor-default disabled:shadow-none"
       >
          {children}
       </button>

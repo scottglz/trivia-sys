@@ -1,6 +1,7 @@
 import { userFull } from '@trivia-nx/users';
 import { questionAndGuessIds } from './reduxstore';
-import { guessesMap, questionWithGuesses } from './types/question';
+import { guessesMap } from './types/question';
+import { QuestionWire } from '@trivia-nx/types';
 
 export const SET_MESSAGE_PAGE_MESSAGE =  'SET_MESSAGE_PAGE_MESSAGE';
 export const SET_ACTIVE_USERID = 'SET_ACTIVE_USERID';   
@@ -24,7 +25,7 @@ function normalizeUsers(users: userFull[]): usersMap {
    return obj;
 }
 
-function normalizeQuestionsWithGuesses(questions: questionWithGuesses[]) {
+function normalizeQuestionsWithGuesses(questions: QuestionWire[]) {
    
    const guessesObj = {} as guessesMap;
    const questionsObj = {} as { [day: string]: questionAndGuessIds };
@@ -33,8 +34,7 @@ function normalizeQuestionsWithGuesses(questions: questionWithGuesses[]) {
       const guesses = question.guesses || [];
       guesses.forEach(function(guess) {
          guessesObj[guess.guessid] = {
-            ...guess,
-            day: question.day 
+            ...guess 
          };
       });
       
@@ -111,7 +111,7 @@ export const actions = {
       };
    },
 
-   questionsLoaded(fromDay: string, toDay: string, questionsWithGuesses: questionWithGuesses[]) {
+   questionsLoaded(fromDay: string, toDay: string, questionsWithGuesses: QuestionWire[]) {
       const {questions, guesses} = normalizeQuestionsWithGuesses(questionsWithGuesses);
       return {
          type: QUESTIONS_LOADED as typeof QUESTIONS_LOADED,

@@ -3,11 +3,11 @@ import { daysAgo, today, formatDateFancy } from '@trivia-nx/days';
 import Button from './button';
 import TextInput from './textinput';
 import QuestionCard from './questioncard';
-import { guess, question } from '../types/question';
+import { questionPlus } from '../types/question';
 
 interface props {
-   question: question,
-   onSubmit: (question: question, guess: string) => void
+   question: questionPlus,
+   onSubmit: (question: questionPlus, guess: string) => void
 }
 
 interface state {
@@ -56,9 +56,9 @@ export class UnansweredQuestion extends React.Component<props, state>
                <div>{question.q}</div> 
             </div>
 
-            <form className="text-right flex gap-2 flex-wrap items-center max-w-full justify-end" onSubmit={this.onClickSubmit}>
-               <TextInput className="w-72 max-w-full" type="text" value={this.state.guess} placeholder="Your Answer" onChange={this.onChangeInput}/>
-               <Button type="submit" disabled={ !this.state.guess.trim()}>Ok</Button>
+            <form className="text-right flex gap-2 items-center max-w-full justify-end" onSubmit={this.onClickSubmit}>
+               <TextInput className="w-72  flex-shrink" type="text" value={this.state.guess} placeholder="Your Answer" onChange={this.onChangeInput}/>
+               <Button type="submit" disabled={ !this.state.guess.trim()}>OK</Button>
             </form>
             
          </QuestionCard>

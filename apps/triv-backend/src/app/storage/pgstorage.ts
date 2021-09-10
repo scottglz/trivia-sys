@@ -1,5 +1,7 @@
 import { Pool, PoolConfig, types } from 'pg';
 import * as days from '@trivia-nx/days';
+import { userFull } from '@trivia-nx/users';
+import { QuestionWire } from '@trivia-nx/types';
 
 // Get date types as 'YYYY-MM-DD' strings instead of JS Date objects
 const DATE_OID = 1082;
@@ -7,7 +9,14 @@ types.setTypeParser(DATE_OID, function(val) {
    return val;
 });
 
-export default class PGStorage {
+interface Storage {
+   getUsers: () => Promise<userFull[]>,
+   createUser: (name: string, email: string, startday: string) => Promise<userFull[]>,
+   startStopUser: (userid: number, day: string) => Promise<void>,
+   getFullQuestions: (earliestDay: string, latestDay: string) => Promise<QuestionWire[]>
+}
+
+export default class PGStorage implements Storage {
 
    pool: Pool;
    host: string;
@@ -105,7 +114,7 @@ export default class PGStorage {
    async getFullQuestions(earliestDay: string, latestDay: string) {
       const sql = [
          'SELECT q."day", q."q", q."a"',
-         ',json_agg(json_build_object(\'guessid\', g."guessid", \'userid\', g."userid", \'username\', u."username", \'guess\' , g."guess", \'correct\', g."correct")) AS guesses',
+         ',json_agg(json_build_object(\'guessid\', g."guessid", \'day\', q."day", \'userid\', g."userid", \'guess\' , g."guess", \'correct\', g."correct")) AS guesses',
          'FROM "questions" q',
          'LEFT OUTER JOIN "guesses" g ON g."day"=q."day"',
          'LEFT OUTER JOIN "users" u ON g."userid"=u."userid"',
@@ -117,6 +126,7 @@ export default class PGStorage {
       // Process out {userid:null, guess:null, correct: null} guesses that got in there from the LEFT OUTER JOIN... I'm not
       // going to further obfuscate the query to do that
       for (const q of rows) {
+         q.id = q.day;
          q.guesses = q.guesses.filter(guess => guess.userid !== null);
       }
       return rows;

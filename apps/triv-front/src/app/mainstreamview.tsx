@@ -15,7 +15,7 @@ import { useEffect } from 'react';
 import { SigninView } from './signinview';
 
 function VerticalStream(props: { children: ReactNode }) {
-   return <div className=" w-stream max-w-full bg-white text-black flex flex-col gap-12 py-7 px-1.5vw m-auto min-h-full">{props.children}</div>;
+   return <div className=" w-stream max-w-full bg-white text-black flex flex-col gap-12 py-7 px-1.5vw m-auto min-h-full light-area">{props.children}</div>;
 }
 
 function StreamHeadline({children}: { children: ReactNode }) {
@@ -36,6 +36,7 @@ function MainStreamView() {
    const activeUsers = useSelector(selectors.activeUsers);
    const scoresData = useSelector(selectors.scoresData);
    const guesses = useSelector((state) => state.guesses);
+   const userid = useSelector((state) => state.user.userid);
    const activeUser = useSelector((state) => state.users ? state.users[state.user.userid] : null);
 
    const dispatch = useDispatch();
@@ -49,17 +50,17 @@ function MainStreamView() {
       }
    }, [needsReload, dispatch]);
 
-   if (!activeUser) {
-      return <SigninView />;
-   }
-
-   if (!isUserActive(activeUser, today())) {
-      return <VacationView user={activeUser} onSubmitEndVacation={() => dispatch(submitEndVacation(activeUser.userid))}/>;
-   }
-
+   
    if (!isReloading) {
+      if (!activeUser) {
+         return <SigninView />;
+      }
+   
+      if (!isUserActive(activeUser, today())) {
+         return <VacationView user={activeUser} onSubmitEndVacation={() => dispatch(submitEndVacation(activeUser.userid))}/>;
+      }
+
       return <VerticalStream>
-         {!!questionsToAnswer.length && <StreamHeadline>Questions to answer</StreamHeadline>}
          {
             questionsToAnswer.map(question => <UnansweredQuestion
                key={question.id}
@@ -86,7 +87,7 @@ function MainStreamView() {
    else {
       return (
          <VerticalStream>
-            Loading...
+            Loading....
          </VerticalStream>
       );
    }

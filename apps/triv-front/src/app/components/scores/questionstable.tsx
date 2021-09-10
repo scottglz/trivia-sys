@@ -4,7 +4,7 @@ import { isUserActive, userFull } from '@trivia-nx/users';
 import { ExpandedScore } from './expandedscore';
 import { isDayInYear } from '@trivia-nx/days';
 import { BsChatQuote } from 'react-icons/bs';
-import { question, questionPlus } from '../../types/question';
+import { questionPlus } from '../../types/question';
 
 interface childrenAndClassNameProps {
    className?: string,

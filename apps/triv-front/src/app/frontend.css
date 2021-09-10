@@ -5,14 +5,13 @@
 @layer base {
    :root {
       --color-bar: 0, 0, 0;
-      --color-bar-text: 255, 255, 255;
-      --color-bar-link: 200, 255, 200;
+      --color-text: 0, 0, 0;
+      --color-link: 0, 128, 0;
+      --color-link-hover: 50, 178, 50
    }
 
    .theme-beethoven {
       --color-bar: 240, 240, 255;
-      --color-bar-text: 0, 0, 0;
-      --color-bar-link: 128, 128, 196;
    }
 
    html {
@@ -33,6 +32,18 @@
 
    .vertical-rl {
       writing-mode: vertical-rl;
+   }
+
+   .dark-area {
+      --color-text: 255, 255, 255;
+      --color-link: 128, 255, 128;
+      --color-link-hover: 200, 255, 128
+   }
+
+   .light-area {
+      --color-text: 0, 0, 0;
+      --color-link: 0, 128, 0;
+      --color-link-hover: 0, 80, 0
    }
 
    

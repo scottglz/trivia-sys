@@ -3,7 +3,6 @@ import React, { ReactNode } from 'react';
 interface props {
    children: ReactNode,
    href?: string,
-   colorClass?: string,
    isSelected?: boolean,
    onClick?: () => void
 }
@@ -11,13 +10,11 @@ interface props {
 function Link({
    children,
    href,
-   colorClass = '',
    isSelected,
    onClick
 } : props) {
-   const className = `no-underline ${colorClass} ${isSelected ? 'pointer-events-none' : 'cursor-pointer'}`;
    return (
-      <a href={href} className={className} onClick={onClick}>
+      <a href={href} className={`no-underline hover:text-link-hover-color hover:animate-pulse ${isSelected ? 'text-plain-color pointer-events-none' : 'text-link-color cursor-pointer'}`} onClick={onClick}>
          {children}
       </a>
    );

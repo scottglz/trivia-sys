@@ -31,18 +31,8 @@
     "days": {
       "tags": []
     },
-    "kit": {
-      "tags": []
-    },
     "ranger": {
       "tags": []
-    },
-    "store": {
-      "tags": []
-    },
-    "store-e2e": {
-      "tags": [],
-      "implicitDependencies": ["store"]
     },
     "triv-backend": {
       "tags": []
@@ -53,6 +43,9 @@
     "triv-front-e2e": {
       "tags": [],
       "implicitDependencies": ["triv-front"]
+    },
+    "types": {
+      "tags": []
     },
     "users": {
       "tags": []

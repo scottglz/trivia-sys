@@ -7,8 +7,9 @@ import tuesdayTriviaAnalyzer from './tuesday-trivia-analyzer';
 import { makeUsersCache } from './userscache';
 import RestError from './resterror';
 import * as days from '@trivia-nx/days';
-import { isUserActive } from '@trivia-nx/users';
+import { isUserActive, userFull } from '@trivia-nx/users';
 import shareSocketIo from './sharesocketio';
+import { QuestionWire } from '@trivia-nx/types';
 
 const router = routerMaker();
 const storage = config.storage;
@@ -18,19 +19,19 @@ const MILLIS_IN_HOUR = 60 * 60 * 1000;
 
 const dayNames = days.dayNames;
 
-function allGraded(item) {
-   return item.guesses.every(item => item.correct === true || item.correct === false);
+function allGraded(question: QuestionWire) {
+   return question.guesses.every(guess => guess.correct === true || guess.correct === false);
 }
 
-function hasUserGuessed(question, userid) {
+function hasUserGuessed(question: QuestionWire, userid: number) {
    return question.guesses.some(guess => guess.userid === userid && !!guess.guess);
 }
 
-function allUsersGuessed(question, users) {
+function allUsersGuessed(question: QuestionWire, users: userFull[]) {
    return users.every(user => !isUserActive(user, question.day) || hasUserGuessed(question, user.userid)); 
 }
 
-async function getFullQuestions(earliestDay, latestDay) {
+async function getFullQuestions(earliestDay: string, latestDay: string) {
    const today = days.today();
    if (latestDay > today) {
       latestDay = today;
@@ -104,8 +105,8 @@ router.post('/crasho', async function() {
    return y;
 });
 
-router.get('/tzoffset', function(request, response) {
-   response.json(new Date().getTimezoneOffset());
+router.get('/hello', async function(request, response) {
+   response.json('Hi There! I\'ve been updated!');
 });
 
 router.post('/questions', async function(request, response) {

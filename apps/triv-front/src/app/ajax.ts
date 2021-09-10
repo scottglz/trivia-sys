@@ -48,9 +48,13 @@ export function getWhoAmI() {
          if (user === false)
          {
             dispatch(setActiveUserId(0, 'Guest'));
+            localStorage.removeItem('lastUserId');
+            localStorage.removeItem('lastUserName');
          }
          else {
             dispatch(setActiveUserId(user.userid, user.username));
+            localStorage.setItem('lastUserId', '' + user.userid);
+            localStorage.setItem('lastUserName', user.username);
          }
 
       }).catch(function(err) {

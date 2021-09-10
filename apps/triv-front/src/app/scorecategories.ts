@@ -1,6 +1,7 @@
 import * as days from '@trivia-nx/days';
 import { userFull, isUserActive } from '@trivia-nx/users';
-import { questionPlus, guess } from './types/question';
+import { questionPlus } from './types/question';
+import { GuessWire } from '@trivia-nx/types';
 
 export interface scoreObj {
    value: number,
@@ -67,7 +68,7 @@ function pad2(x: number) {
    return (x < 0 || x > 9 ? '' : '0') + x;
 }
 
-function getLongestStreak(gradedQuestions: questionPlus[], user: userFull, isGuessStreaky: (guess: guess) => boolean) {
+function getLongestStreak(gradedQuestions: questionPlus[], user: userFull, isGuessStreaky: (guess: GuessWire) => boolean) {
    let currentStreak = 0;
    let longestStreak = 0;
    gradedQuestions.forEach(function(question) {
@@ -89,14 +90,14 @@ function countWhere<Type>(array: Type[], predicate: (element: Type, index: numbe
 function getOnlyRights(gradedQuestions: questionPlus[], user: userFull) {
    return countWhere(gradedQuestions, question => {
       const guess = question.guessesMap[user.userid];
-      return guess && guess.correct === true && question.guesses.every(guess => guess.userid === user.userid || !guess.correct);
+      return guess && guess.correct === true && Object.values(question.guessesMap).every(guess => guess.userid === user.userid || !guess.correct);
    });
 }
 
 function getOnlyWrongs(gradedQuestions: questionPlus[], user: userFull) {
    return countWhere(gradedQuestions, question => {
       const guess = question.guessesMap[user.userid];
-      return guess && guess.correct === false && question.guesses.every(guess => guess.userid === user.userid || guess.correct);
+      return guess && guess.correct === false &&  Object.values(question.guessesMap).every(guess => guess.userid === user.userid || guess.correct);
    });
 }
 

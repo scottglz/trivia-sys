@@ -1,5 +1,3 @@
-import ordinal from 'ordinal';
-
 const MILLIS_IN_HOUR = 60 * 60 * 1000;
 const MILLIS_PER_DAY = MILLIS_IN_HOUR * 24;
 
@@ -55,7 +53,7 @@ export function formatDateFancy(date: Date|string) {
    if (typeof date === 'string') {
       date = dayStringToDate(date);
    }
-   return dayNames[date.getDay()] + ', ' + ordinal(date.getDate()) + ' ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
+   return dayNames[date.getDay()] + ', ' + date.getDate() + ' ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
 }
 
 // Like Math.min but works on day strings

@@ -4,8 +4,9 @@ import { processScores } from '../processscores';
 import { rangesContain, rangesOverlap } from '@trivia-nx/ranger';
 import { getDayNumber } from '@trivia-nx/days';
 import { userFull, isUserActive, isUserActiveInYear } from '@trivia-nx/users';
-import {  guess, guessesMap, questionPlus } from '../types/question';
+import { guessesMap, questionPlus } from '../types/question';
 import { reduxState } from '../reduxstore';
+import { GuessWire } from '@trivia-nx/types';
 
 const currentUserId = (state: reduxState) => state.user.userid;
 const rawQuestionsIndex = (state: reduxState) => state.questions;
@@ -73,7 +74,7 @@ function areAllGuessed(guessesMap: guessesMap, users: userFull[], day: string) {
 // The questions index, processed to give each an array of actual guesses, and a map of userIds -> guesses, and an allGraded flag
 const questionsIndex = createSelector(rawQuestionsIndex, guessesIndex, usersArray, function(rawQuestionsIndex, guessesIndex, usersArray) {
    return objectMap(rawQuestionsIndex, question => {
-      const guessesMap = {} as Record<string, guess>;
+      const guessesMap = {} as Record<string, GuessWire>;
       question.guessIds.forEach(guessId => { 
          const guess = guessesIndex[guessId];
          guessesMap['' + guess.userid] = guess;
@@ -81,7 +82,6 @@ const questionsIndex = createSelector(rawQuestionsIndex, guessesIndex, usersArra
       return {
          ...question,
          allGraded: !!question.a && areAllGraded(guessesMap, usersArray, question.day),
-         guesses: question.guessIds.map(gid => guessesIndex[gid]),
          guessesMap
       } as questionPlus;
    });

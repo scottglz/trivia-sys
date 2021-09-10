@@ -18,6 +18,7 @@
       "@kit": ["libs/kit/src/index.ts"],
       "@trivia-nx/days": ["libs/days/src/index.ts"],
       "@trivia-nx/ranger": ["libs/ranger/src/index.ts"],
+      "@trivia-nx/types": ["libs/types/src/index.ts"],
       "@trivia-nx/users": ["libs/users/src/index.ts"]
     }
   },

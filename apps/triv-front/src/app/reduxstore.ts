@@ -1,9 +1,10 @@
 import { applyMiddleware, compose, createStore } from 'redux';
 import { rootReducer } from './reducers/rootreducer';
 import reduxThunk from 'redux-thunk';
-import { guessesMap, question } from './types/question';
+import { guessesMap } from './types/question';
 import { range } from '@trivia-nx/ranger';
 import { userFull } from '@trivia-nx/users';
+import { QuestionWire } from '@trivia-nx/types';
 
 const thunkApplied = applyMiddleware(reduxThunk);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,7 +15,7 @@ export const dispatch = rootStore.dispatch.bind(rootStore);
 
 export type dispatchType = typeof dispatch;
 
-export interface questionAndGuessIds extends question {
+export interface questionAndGuessIds extends Omit<QuestionWire, 'guesses'> {
     guessIds: number[]
  }
 /*

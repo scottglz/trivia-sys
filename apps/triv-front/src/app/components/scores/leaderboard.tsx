@@ -17,9 +17,9 @@ export function Leaderboard(props: {
       return null;
    }
    return (
-      <div className="flex flex-col gap-2 items-center lg:text-gray-300 xl:fixed xl:right-10 xl:top-16">
-         <h2 className="font-bold text-black xl:text-current">Leaderboards</h2>
-         <div className="flex gap-4 xl:flex-col xl:items-stretch">
+      <div className="flex flex-col gap-2 items-center xl:fixed xl:right-10 xl:top-16 xl:dark-area">
+         <h2 className="font-bold text-plain-color">Leaderboards</h2>
+         <div className="flex gap-4 xl:flex-col xl:items-stretch overflow-x-auto max-w-full">
             {
                leaderboardCategories.map(category => (
                   <CategoryTable key={category.name} category={category} activeUsers={activeUsers} questionsArray={questionsArray} />

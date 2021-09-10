@@ -181,7 +181,7 @@ router.get('/auth/slackredirect', async function(request, response) {
    }
    else {
       response.render('page.html', {
-         message: 'Something went wrong, sorry.'
+         message: 'Something went wrong, sorry. :-/'
       });
    }
 });
