@@ -110,11 +110,18 @@ const gradingQuestions = createSelector([questionsArray, usersArray], function(q
 });
 
 const recentQuestions = createSelector([questionsArray, usersArray, currentUserId], function(questionsArray, usersArray, currentUserId) {
-   // Last 30 questions where the current user has a guess, and it's either all graded or not everybody has guessed yet
-   return questionsArray
-      .filter(question => question.guessesMap[currentUserId])
-      .filter(question => question.allGraded || !areAllGuessed(question.guessesMap, usersArray, question.day))
-      .slice(0, 30);
+   if (currentUserId) {
+       // Last 30 questions where the current user has a guess, and it's either all graded or not everybody has guessed yet
+      return questionsArray
+         .filter(question => question.guessesMap[currentUserId])
+         .filter(question => question.allGraded || !areAllGuessed(question.guessesMap, usersArray, question.day))
+         .slice(0, 30);
+   }
+   else {
+      return questionsArray
+         .filter(question => question.allGraded)
+         .slice(0, 30);
+   }
 });
 
 

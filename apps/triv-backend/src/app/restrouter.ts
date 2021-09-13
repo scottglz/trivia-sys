@@ -1,6 +1,6 @@
 import { json, urlencoded } from 'express';
 import routerMaker from 'express-promise-router';
-import * as requestHttp from 'request';
+import axios from 'axios';
 import { environment as config } from '../environments/environment';
 
 import tuesdayTriviaAnalyzer from './tuesday-trivia-analyzer';
@@ -70,20 +70,16 @@ router.post('/slack', async function(request, response) {
    const questions = await getFullQuestions(day, day);
 
    if (!questions.length) {
-      requestHttp.post(responseUrl, {
-         json: {
-            response_type: 'in_channel', 
-            text: 'I don\'t have any trivia for ' + dayDisplay + ' (disapproval)'
-         }
+      axios.post(responseUrl, {
+         response_type: 'in_channel', 
+         text: 'I don\'t have any trivia for ' + dayDisplay + ' (disapproval)'
       });
    }
    else {
       const message = 'Trivia for ' + dayDisplay + ': ' + questions[0].q;
-      requestHttp.post(responseUrl, {
-         json: { 
-            response_type: 'in_channel', 
-            text: message
-         }
+      axios.post(responseUrl, {
+         response_type: 'in_channel', 
+         text: message
       });
    }
 });
@@ -173,7 +169,7 @@ function messageSlack(message) {
    const data = {
       text: message
    };
-   requestHttp.post(config.slackChannel, { json: data });
+   axios.post(config.slackChannel, data);
 }
 
 

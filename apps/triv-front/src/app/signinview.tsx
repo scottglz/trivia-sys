@@ -37,7 +37,7 @@ class SigninView extends React.Component<props, state>
          const baseUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
          const redirectUrl = baseUrl + '/auth/slackredirect';
          const slackUrl = "https://slack.com/oauth/authorize?scope=identity.basic,identity.email,identity.avatar&client_id=456894231392.459012826326&&team=TDESA6TBJ&redirect_uri="  + encodeURIComponent(redirectUrl) + '&state=' + encodeURIComponent(baseUrl);
-         return <div className="flex flex-col gap-2 items-center p-4 pt-8">
+         return <div className="text-center"><div className="inline-flex flex-col gap-2 items-center p-4 bg-green-200 light-area rounded-xl">
             <p>Send me a magic login link</p>
             <form className="flex gap-4 items-center max-w-full flex-wrap justify-center" onSubmit={this.onClickSubmit}>
                <TextInput className=" w-96" type="email" autoFocus placeholder="My Email Address" value={email} onChange={this.onChangeInput} readOnly={submitting}/>
@@ -46,7 +46,7 @@ class SigninView extends React.Component<props, state>
              {this.state.error && <div className="my-1 py-1 px-2 border border-orange">{this.state.error}</div>}
              <p>Or...</p>
              <a href={slackUrl}><img alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcSet="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x"/></a>
-         </div>;
+         </div></div>;
       }
       else {
          return <div className="p-8">Thank you! Your email is on its way. The login link in your email will be valid for the next five minutes.</div>;

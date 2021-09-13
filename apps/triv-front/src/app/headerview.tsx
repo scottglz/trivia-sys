@@ -32,7 +32,7 @@ function HeaderView() {
       userControls = [<span key="hello">{'Hello ' + user.username}</span>,<Link key="logout" onClick={onClickLogout}>Log out</Link>];
    }
 
-   return <div className="bg-bar text-bar p-2 header flex justify-between dark-area">
+   return <div className="bg-bar p-2 flex justify-between dark-area">
       <div className="flex gap-4">
          {viewLinks} 
       </div>

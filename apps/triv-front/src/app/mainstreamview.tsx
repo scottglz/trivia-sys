@@ -52,15 +52,12 @@ function MainStreamView() {
 
    
    if (!isReloading) {
-      if (!activeUser) {
-         return <SigninView />;
-      }
-   
-      if (!isUserActive(activeUser, today())) {
-         return <VacationView user={activeUser} onSubmitEndVacation={() => dispatch(submitEndVacation(activeUser.userid))}/>;
-      }
-
       return <VerticalStream>
+         { !activeUser && <SigninView /> }
+         { 
+            activeUser && !isUserActive(activeUser, today()) &&
+               <VacationView user={activeUser} onSubmitEndVacation={() => dispatch(submitEndVacation(activeUser.userid))}/>
+         }
          {
             questionsToAnswer.map(question => <UnansweredQuestion
                key={question.id}

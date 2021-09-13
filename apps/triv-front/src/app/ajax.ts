@@ -7,7 +7,7 @@ const ajax = axios.create();
 
 const { questionsLoading, usersLoaded, questionsLoaded, commentsLoaded, setActiveUserId } = actions;
 
-ajax.interceptors.request.use(function (config) {
+/*ajax.interceptors.request.use(function (config) {
    const jwt = localStorage.getItem('jwt');
    if (jwt) {
       config.headers.Authorization = 'Bearer ' + jwt;
@@ -15,7 +15,7 @@ ajax.interceptors.request.use(function (config) {
    return config;
 }, function (error) {
    return Promise.reject(error);
-});
+});*/
 
 let authenticationFailureHandler: (() => void) | null  = null;
 

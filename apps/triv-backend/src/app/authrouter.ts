@@ -1,6 +1,6 @@
 import { json, Response } from 'express';
 import routerMaker from 'express-promise-router';
-import * as requestHttp from 'request-promise-native';
+import axios from 'axios';
 import { environment as config } from '../environments/environment';
 import { makeUsersCache } from './userscache';
 import * as jwt from 'jsonwebtoken';
@@ -10,6 +10,7 @@ import * as loginTokens from './logintokens';
 import * as Mailgun  from 'mailgun-js';
 import { userFull } from '@trivia-nx/users';
 import * as cookieParser from 'cookie-parser';
+import * as querystring from 'querystring';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -142,29 +143,28 @@ router.get('/auth/slackredirect', async function(request, response) {
       throw new Error('Error from Slack: ' + params.error);
    }
 
-   const code = params.code;
+   const code = params.code as string;
    const baseUrl = params.state;
    const redirect_uri = baseUrl + '/auth/slackredirect';
 
    if (code) {
-      const slackresponse = await requestHttp.get('https://slack.com/api/oauth.access', {
-         json: true,
-         qs: {
+      const slackresponse = await axios.get('https://slack.com/api/oauth.access?' +
+         querystring.stringify({
             client_id: '456894231392.459012826326',
             client_secret: process.env.SLACK_OATH_SECRET,
             code: code,
             redirect_uri: redirect_uri
-         }
-      });
+         })
+      );
 
-      let slackUser = slackresponse.user;
+      let slackUser = slackresponse.data.user;
       if (!slackUser) {
-         const accessToken = slackresponse.access_token;
+         const accessToken = slackresponse.data.access_token;
          if (!accessToken) {
             throw new Error('No User and No Access Token: ' + JSON.stringify(slackresponse));
          }
-         const nextResponse = await requestHttp.get('https://slack.com/api/users.identity?token=' + accessToken);
-         slackUser = nextResponse.user;
+         const nextResponse = await axios.get('https://slack.com/api/users.identity?token=' + accessToken);
+         slackUser = nextResponse.data.user;
          if (!slackUser) {
             throw new Error('STILL no slackUser?');
          }
