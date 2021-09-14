@@ -1,6 +1,6 @@
 import { Pool, PoolConfig, types } from 'pg';
 import * as days from '@trivia-nx/days';
-import { userFull } from '@trivia-nx/users';
+import { TriviaStorage } from './triviastorage';
 import { QuestionWire } from '@trivia-nx/types';
 
 // Get date types as 'YYYY-MM-DD' strings instead of JS Date objects
@@ -9,14 +9,7 @@ types.setTypeParser(DATE_OID, function(val) {
    return val;
 });
 
-interface Storage {
-   getUsers: () => Promise<userFull[]>,
-   createUser: (name: string, email: string, startday: string) => Promise<userFull[]>,
-   startStopUser: (userid: number, day: string) => Promise<void>,
-   getFullQuestions: (earliestDay: string, latestDay: string) => Promise<QuestionWire[]>
-}
-
-export default class PGStorage implements Storage {
+export default class PGStorage implements TriviaStorage {
 
    pool: Pool;
    host: string;
@@ -80,13 +73,13 @@ export default class PGStorage implements Storage {
       await this.query('INSERT INTO "userstartstop" ("userid", "day") VALUES ($1, $2)', [userid, day]);
    }
    
-   async upsertQuestions(questions) {
+   async upsertQuestions(questions: {day: string, q: string}[]) {
       for (const question of questions) {
          await this.query('INSERT INTO "questions" ("day", "q") VALUES ($1, $2) ON CONFLICT DO NOTHING', [question.day, question.q]);
       }
    }
    
-   async insertGuess(day: string, userid: number, guess: string) {
+   async insertGuess(day: string, userid: number, guess: string) { 
       await this.query('INSERT INTO "guesses" ("day", "userid", "guess") VALUES ($1,$2,$3)', [day, userid, guess]);
    }
 
@@ -111,7 +104,7 @@ export default class PGStorage implements Storage {
       }
    }
    
-   async getFullQuestions(earliestDay: string, latestDay: string) {
+   async getFullQuestions(earliestDay: string, latestDay: string): Promise<QuestionWire[]> {
       const sql = [
          'SELECT q."day", q."q", q."a"',
          ',json_agg(json_build_object(\'guessid\', g."guessid", \'day\', q."day", \'userid\', g."userid", \'guess\' , g."guess", \'correct\', g."correct")) AS guesses',

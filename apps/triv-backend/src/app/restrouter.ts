@@ -10,9 +10,10 @@ import * as days from '@trivia-nx/days';
 import { isUserActive, userFull } from '@trivia-nx/users';
 import shareSocketIo from './sharesocketio';
 import { QuestionWire } from '@trivia-nx/types';
+import { TriviaStorage } from './storage/triviastorage';
 
 const router = routerMaker();
-const storage = config.storage;
+const storage = config.storage as TriviaStorage;
 const usersCache = makeUsersCache(storage);
 
 const MILLIS_IN_HOUR = 60 * 60 * 1000;
@@ -222,6 +223,11 @@ function sendSocketUpdates(question, skipUserId)
    }
 }
 
+async function getUserIdsToNamesMap(): Promise<Map<number, string>> {
+   const usersArray = await usersCache.getUsers();
+   return new Map(usersArray.map(user => [user.userid, user.username]));
+}
+
 async function afterGrading(day: string, gradingUserid: number) {
    const questions = await getFullQuestions(day, day);
    if (questions.length === 1) {
@@ -229,8 +235,9 @@ async function afterGrading(day: string, gradingUserid: number) {
       sendSocketUpdates(question, gradingUserid);
       if (question.a && allGraded(question)) {
          const guesses = question.guesses;
-         const rightNames = guesses.filter(guess => guess.correct).map(guess => guess.username);
-         const wrongNames = guesses.filter(guess => !guess.correct).map(guess => guess.username);
+         const userNames = await getUserIdsToNamesMap();
+         const rightNames = guesses.filter(guess => guess.correct).map(guess => userNames.get(guess.userid));
+         const wrongNames = guesses.filter(guess => !guess.correct).map(guess =>  userNames.get(guess.userid));
          const numberCorrect = rightNames.length;
          const numGuesses = guesses.length;
          let msg: string;
