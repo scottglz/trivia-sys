@@ -1,5 +1,4 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import { default as React, lazy, Suspense, ReactNode} from 'react';
+import { default as React, lazy, Suspense, ReactNode, useState} from 'react';
 import { createPortal } from 'react-dom';
 import { MdShowChart } from 'react-icons/md';
 import { userFull } from '@trivia-nx/users';
@@ -37,71 +36,67 @@ type props = {
    questionsArray: questionPlus[]
 };
 
-type state = {
-   graphData: graphDatum[]|null
-}
 
-export class CategoryTable extends React.Component<props, state> {
+export function CategoryTable(props: props)  {
+   const [graphData, setGraphData] = useState<graphDatum[]|null>(null);
 
+   const { category, activeUsers, questionsArray }  = props;
 
-   constructor(props: props) {
-      super(props);
-      this.state = {
-         graphData: null
-      };
-      
-      this.onClickShowGraph = this.onClickShowGraph.bind(this);
-      this.onCloseGraph = this.onCloseGraph.bind(this);
-   }
-
-   render() {
-      const { category, activeUsers }  = this.props;
-      const scores = category.scores();
-      const userRows = activeUsers.map(function(user, i) {
-         const score = scores[i];
-         if (!score) {
-            return <div className="flex justify-between py-0 px-1 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>&nbsp;</div>;
-         }
-         else {
-            const value = score.score.value;
-            const outOf = score.score.outOf;
-            return <div className="flex justify-between py-0 px-1 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>
-               <span>{score.username}</span>
-               <span className="text-right w-20" title={outOf ? `${value} of ${outOf} attempts` : ''}>{value}{outOf ? ' (' + asBattingAverage(value, outOf) + ')' : ''}</span>
-            </div>;
-         }
-      });
-
-      return <div>
-         <div className="bg-black text-gray-200 font-bold text-center py-0.5 border border-b-0 border-solid border-gray-500 rounded-t-xl">
-            {category.name}
-            {category.graphable && <a className="text-white float-right mr-2 cursor-pointer" title="Open Graph" onClick={this.onClickShowGraph}><MdShowChart /></a>}
-         </div>
-         {userRows}
-         { 
-            this.state.graphData && (
-               <MyModal onClose={this.onCloseGraph}>
-                  <Suspense fallback={<div>Loading...</div>}>
-                     <ScoresGraph graphData={this.state.graphData} users={activeUsers} />
-                  </Suspense>
-               </MyModal>
-            ) 
-         } 
-      </div>;
-   }
-
-   onClickShowGraph() {
-      const { category, activeUsers, questionsArray } = this.props;
+   function onClickShowGraph() {
       if (category.getGraphData) {
-         this.setState({
-            graphData: category.getGraphData(questionsArray, activeUsers)
-         });
+         setGraphData(category.getGraphData(questionsArray, activeUsers));
       }
    }
 
-   onCloseGraph() {
-      this.setState({
-         graphData: null
-      });   
+   function onCloseGraph() {
+      setGraphData(null);   
    }
+
+   const scores = category.scores();
+   const userRows = activeUsers.map(function(user, i) {
+      const score = scores[i];
+      if (!score) {
+         return <div className="flex justify-between py-0 px-1 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>&nbsp;</div>;
+      }
+      else {
+         const value = score.score.value;
+         const outOf = score.score.outOf;
+         return <div className="flex justify-between py-0 px-1 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>
+            <span>{score.username}</span>
+            <span className="text-right w-20" title={outOf ? `${value} of ${outOf} attempts` : ''}>{value}{outOf ? ' (' + asBattingAverage(value, outOf) + ')' : ''}</span>
+         </div>;
+      }
+   });
+
+   return <div>
+      <div className="bg-black text-gray-200 font-bold text-center py-0.5 border border-b-0 border-solid border-gray-500 rounded-t-xl">
+         {category.name}
+         {category.graphable && <span className="text-white float-right mr-2 cursor-pointer" title="Open Graph" onClick={onClickShowGraph}><MdShowChart /></span>}
+      </div>
+      {userRows}
+      { 
+         graphData && (
+            <MyModal onClose={onCloseGraph}>
+               <Suspense fallback={<div>Loading...</div>}>
+                  <ScoresGraph graphData={graphData} users={activeUsers} />
+               </Suspense>
+            </MyModal>
+         ) 
+      } 
+   </div>;
+}
+
+CategoryTable.Skeleton = function() {
+   return (
+      <div className="animate-skeleton">
+         <div className="bg-black text-gray-200 font-bold text-center py-0.5 border border-b-0 border-solid border-gray-500 rounded-t-xl">&nbsp;</div>
+         {
+            [1,2,3,4,5,6].map((key) => (
+               <div className="flex justify-between py-0 px-1 bg-white text-black even:bg-green-200 leading-snug w-40" key={key}>
+                  <span>&nbsp;</span>
+              </div>
+            ))
+         }
+      </div>
+   );
 }

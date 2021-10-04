@@ -1,4 +1,4 @@
-import { json, urlencoded } from 'express';
+import { json, Request, Response, urlencoded } from 'express';
 import routerMaker from 'express-promise-router';
 import axios from 'axios';
 import { environment as config } from '../environments/environment';
@@ -9,7 +9,7 @@ import RestError from './resterror';
 import * as days from '@trivia-nx/days';
 import { isUserActive, userFull } from '@trivia-nx/users';
 import shareSocketIo from './sharesocketio';
-import { QuestionWire } from '@trivia-nx/types';
+import { EditAnswerData, EditGradeData, GetQuestionsData, QuestionWire, SubmitGradesData, SubmitGuessData } from '@trivia-nx/types';
 import { TriviaStorage } from './storage/triviastorage';
 
 const router = routerMaker();
@@ -46,7 +46,7 @@ async function getFullQuestions(earliestDay: string, latestDay: string) {
 router.use(json()); 
 router.use(urlencoded({extended: false}));
 
-router.get('/whoami', function(request, response) {
+router.get('/whoami', function(request: RequestFor<void>, response: Response) {
    if (request.user) {
       response.json(request.user);
    }
@@ -102,11 +102,12 @@ router.post('/crasho', async function() {
    return y;
 });
 
-router.get('/hello', async function(request, response) {
-   response.json('Hi There! I\'ve been updated!');
+router.get('/users', async function(_request, response) {
+   const users = await usersCache.getUsers(); 
+   response.json(users);
 });
 
-router.post('/questions', async function(request, response) {
+router.post('/questions', async function(request: RequestFor<GetQuestionsData>, response) {
    const body = request.body;
    const user = request.user;
    if (!body.earliestDay || !body.latestDay) {
@@ -127,7 +128,7 @@ router.post('/questions', async function(request, response) {
       }
    }
   
-   response.json({questions, users});
+   response.json(questions);
 });
 
 router.post('/question/details', userRequired, async function(request, response) {
@@ -150,13 +151,17 @@ function userRequired(request) {
    }
 }
 
-router.put('/guess', userRequired, async function(request, response) {
-   const body = request.body;
-   if (!body.guess) {
+interface RequestFor<T> extends Request {
+   body: T
+}
+
+router.put('/guess', userRequired, async function(request: RequestFor<SubmitGuessData>, response) {
+   const { questionid: day, guess } = request.body;
+   if (!guess) {
       throw new RestError(400, "Guess Required");
    }
-   await storage.insertGuess(body.day, request.user.userid, body.guess);
-   const question = await afterGuess(body.day, request.user.userid);
+   await storage.insertGuess(day, request.user.userid, guess);
+   const question = await afterGuess(day, request.user.userid);
    response.json(question);
 });
 
@@ -166,7 +171,7 @@ router.post('/comments/add', userRequired, async function(request, response) {
    response.json({});
 });
 
-function messageSlack(message) {
+function messageSlack(message: string) {
    const data = {
       text: message
    };
@@ -175,7 +180,7 @@ function messageSlack(message) {
 
 
 
-async function afterGuess(day, userGuessing) {
+async function afterGuess(day: string, userGuessing: number) {
    const questions = await getFullQuestions(day, day);
    if (!questions.length) {
       return;
@@ -211,7 +216,7 @@ function joinNames(names: string[]) {
    return s + names[last];
 }
 
-function sendSocketUpdates(question, skipUserId)
+function sendSocketUpdates(question: QuestionWire, skipUserId: number)
 {
    const hasGuessed = new Set(question.guesses.map(g => g.userid));
    
@@ -268,15 +273,55 @@ async function afterGrading(day: string, gradingUserid: number) {
    }
 }
 
-
-router.put('/grade', userRequired, async function(request, response) {
-   const body = request.body;
-   await storage.insertAnswerAndGrades(body.day, body.answer, body.grades);
-   const question = await afterGrading(body.day,  request.user.userid);
+router.put('/grade', userRequired, async function(request: RequestFor<SubmitGradesData>, response) {
+   const { questionid: day, answer, grades } = request.body;
+   await storage.insertAnswerAndGrades(day, answer, grades);
+   const question = await afterGrading(day,  request.user.userid);
    response.json(question);
 });
 
-router.post('/endvacation', userRequired, async function(request, response) {
+router.put('/editanswer', userRequired, async function(request: RequestFor<EditAnswerData>, response) {
+   const { questionid: day, answer } = request.body;
+   const question = (await getFullQuestions(day, day))[0];
+   if (!question) {
+      throw new RestError(404, 'No Question For That Day');
+   }
+   if (!question.a) {
+      throw new RestError(400, 'Question has not been graded yet');
+   }
+
+   if (answer === question.a) {
+      response.json(question);
+      return;
+   }
+
+   await storage.updateAnswer(day, answer);
+   const updatedQuestion = (await getFullQuestions(day, day))[0];
+
+   messageSlack(`Answer for ${question.day} changed from "${question.a}" to "${updatedQuestion.a}". (Changed by ${request.user.username})`);
+
+   response.json(updatedQuestion);
+   
+});
+
+router.put('/editgrade', userRequired, async function(request: RequestFor<EditGradeData>, response) {
+   const { questionid: day, userid, correct } = request.body;
+   await storage.updateGrade(day, userid, correct);
+   const questions = await getFullQuestions(day, day);
+   const question = questions[0];
+   if (question) {
+      const guess = question.guesses.find(guess => guess.userid === userid);
+      if (guess) {
+         sendSocketUpdates(question, request.user.userid);
+         const userNames = await getUserIdsToNamesMap();
+         const userName = userNames.get(userid);
+         messageSlack(`Scoring correction for ${question.day}: ${userName}'s answer of "${guess.guess}" is ${correct ? 'right' : 'wrong'}. (Changed by ${request.user.username})`);
+      }
+   }
+   response.json(question);
+});
+
+router.post('/endvacation', userRequired, async function(request: RequestFor<void>, response) {
    const user = request.user;
    
    const today = days.today();

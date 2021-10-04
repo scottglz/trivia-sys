@@ -23,6 +23,19 @@ module.exports = {
       },
       backgroundColor: {
         bar: withOpacity('--color-bar')
+      },
+      animation: {
+        skeleton: 'skeleton 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+      },
+      keyframes: {
+        skeleton: {
+          '0%, 100%': {
+            opacity: 0.5
+          },
+          '50%': {
+            opacity: .2
+          }
+        }
       }
     },
     colors: {

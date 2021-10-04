@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import { connect } from 'react-redux';
 import { hot } from 'react-hot-loader/root';
 import { actions } from './action';
@@ -10,7 +10,7 @@ import { reduxState } from './reduxstore';
 
 const { setQuestionDeetsDay, setMainView } = actions;
 
-/*
+
 interface questionDeetsViewProps {
    day: string,
    question: questionPlus,

@@ -89,7 +89,7 @@ router.post('/auth/requestemailsignin', async function(request, response) {
    }
 
    const token = loginTokens.generateToken(user.userid);
-   const baseUrl = request.protocol + '://' + request.get('host');
+   const baseUrl = 'https://' + request.get('host');
 
    const data = {
       from: config.mailFrom,

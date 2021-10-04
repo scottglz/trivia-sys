@@ -9,6 +9,8 @@ export interface TriviaStorage {
     upsertQuestions: (questions: {day: string, q: string}[]) => Promise<void>,
     insertGuess: (day: string, userid: number, guess: string) => Promise<void>,
     insertAnswerAndGrades: (day: string, answer: string, grades: {correct: boolean, userid: number}[]) => Promise<void>,
+    updateAnswer: (day: string, answer: string) => Promise<void>,
+    updateGrade: (day: string, userid: number, correct: boolean) => Promise<void>,
     getComments: (day: string) => Promise<{day: string, userid: number, comment: string}[]>,
     insertComment: (day: string, userid: number, comment: string) => Promise<void>
  }

@@ -1,40 +1,29 @@
 import React from 'react';
-import classNames from 'classnames';
-import { actions } from './action';
-import { mainViews } from './mainviews';
-import { connect } from 'react-redux';
 import Link from './components/link';
-import { userFull } from '@trivia-nx/users';
-import { dispatchType, reduxState } from './reduxstore';
-import { useDispatch, useSelector } from './hooks';
 import { hot } from 'react-hot-loader/root';
-import { logout } from './ajax';
-
-const { setActiveUserId, setMainView } = actions;
+import { useLogoutMutation, useWhoAmI } from './datahooks';
+import NavLink from './components/navlink';
 
 function HeaderView() {
-   const dispatch = useDispatch();
-   const user = useSelector((state) => state.user);
-   const mainview = useSelector((state) => state.mainview);
-
+   const whoAmIQuery = useWhoAmI();
+   const logoutMutation = useLogoutMutation();
 
    function onClickLogout() {
-      dispatch(logout());
+      logoutMutation.mutate();
    }
    
-   const userViews = mainViews.filter(v => !!v.page && !!v.headerText && (user.userid || v.noUserOk || v.noUserOnly) && (!user.userid || !v.noUserOnly));
-   const viewLinks = userViews.map(v => {
-      const isSelected = mainview === v.name;
-      return <Link isSelected={isSelected} href={v.page} key={v.name}>{v.headerText}</Link>;
-   });
    let userControls;
-   if (user.userid) {
-      userControls = [<span key="hello">{'Hello ' + user.username}</span>,<Link key="logout" onClick={onClickLogout}>Log out</Link>];
+   if (whoAmIQuery.isLoading) {
+      userControls = <span key="hello">...</span>;
+   }
+   else if (whoAmIQuery.data) {
+      userControls = [<span key="hello">{'Hello ' + whoAmIQuery.data.username}</span>,<Link key="logout" onClick={onClickLogout}>Log out</Link>];
    }
 
    return <div className="bg-bar p-2 flex justify-between dark-area">
       <div className="flex gap-4">
-         {viewLinks} 
+         <NavLink to="/" end key="main">Main</NavLink>
+         <NavLink to="/scores" key="scores">Scores</NavLink>
       </div>
       <div className="flex gap-4">
          {userControls}

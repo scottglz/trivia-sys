@@ -1,10 +1,11 @@
-import { default as React, Fragment, MouseEvent, ReactNode, useState } from 'react';
+import { default as React, MouseEvent, ReactNode, useState } from 'react';
 import classNames from 'classnames';
 import { isUserActive, userFull } from '@trivia-nx/users';
 import { ExpandedScore } from './expandedscore';
 import { isDayInYear } from '@trivia-nx/days';
 import { BsChatQuote } from 'react-icons/bs';
 import { questionPlus } from '../../types/question';
+import { useQuestionsPlus, useActiveUsers } from '../../datahooks';
 
 interface childrenAndClassNameProps {
    className?: string,
@@ -100,26 +101,30 @@ function ScoreRow(props: {
 
 
 export function QuestionsTable(props: {
-   year: number,
-   questions: questionPlus[],
-   activeUsers: userFull[]
+   year: number
 }) {
-   const { year, questions, activeUsers } = props;
+   const { year } = props;
    
-   return (
-      <div>
-         <div className="flex items-end sticky top-0 z-10 bg-green-950 bold">
-            <ScoresTableHeaderEntry className="w-14" key="d">Date</ScoresTableHeaderEntry>
-            <ScoresTableHeaderEntry className="flex-grow-[6] flex-shrink-0 w-0">Question</ScoresTableHeaderEntry>
-            <ScoresTableHeaderEntry className="flex-grow flex-shrink-0 w-0">Answer</ScoresTableHeaderEntry>
-            { activeUsers.map(user => <UserAnswerHeader key={user.userid} name={user.username}/>) }
-         </div>   
-         { 
-            questions
-               .filter(question => isDayInYear(question.day, year))
-               .map(question => <ScoreRow key={question.day} users={activeUsers} question={question}/>) 
-         }
-      </div>
-   );
+   const { data: questions } = useQuestionsPlus(year + '-01-01', year + '-12-31');
+   const { data: activeUsers } = useActiveUsers(year);
+   
+   if (questions && activeUsers) {
+      return (
+         <div>
+            <div className="flex items-end sticky top-0 z-10 bg-green-950 bold">
+               <ScoresTableHeaderEntry className="w-14" key="d">Date</ScoresTableHeaderEntry>
+               <ScoresTableHeaderEntry className="flex-grow-[6] flex-shrink-0 w-0">Question</ScoresTableHeaderEntry>
+               <ScoresTableHeaderEntry className="flex-grow flex-shrink-0 w-0">Answer</ScoresTableHeaderEntry>
+               { activeUsers.map(user => <UserAnswerHeader key={user.userid} name={user.username}/>) }
+            </div>   
+            { 
+               questions
+                  .filter(question => isDayInYear(question.day, year))
+                  .map(question => <ScoreRow key={question.day} users={activeUsers} question={question}/>) 
+            }
+         </div>
+      );
+   }
+   return null;         
 }
 

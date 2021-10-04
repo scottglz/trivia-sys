@@ -98,10 +98,18 @@ export default class PGStorage implements TriviaStorage {
    }
    
    async insertAnswerAndGrades(day: string, answer: string, grades: {correct: boolean, userid: number}[]) {
-      await this.query('UPDATE "questions" SET "a"=$1 WHERE "day"=$2', [answer, day]);
+      await this.updateAnswer(day, answer);
       for (const grade of grades) {
          await this.query('UPDATE "guesses" SET "correct"=$1 WHERE "day"=$2 AND "userid"=$3', [grade.correct, day, grade.userid]);
       }
+   }
+
+   async updateGrade(day: string, userid: number, correct: boolean) {
+      await this.query('UPDATE "guesses" SET "correct"=$1 WHERE "day"=$2 AND "userid"=$3', [correct, day, userid]);
+   }
+
+   async updateAnswer(day: string, answer: string) {
+      await this.query('UPDATE "questions" SET "a"=$1 WHERE "day"=$2', [answer, day]);
    }
    
    async getFullQuestions(earliestDay: string, latestDay: string): Promise<QuestionWire[]> {

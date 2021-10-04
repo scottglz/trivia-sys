@@ -1,40 +1,28 @@
-import React, { useEffect } from 'react';
+import React  from 'react';
 import HeaderView from './headerview';
-import { mainViewsIndex } from './mainviews';
 import { hot } from 'react-hot-loader/root';
-import { useDispatch, useSelector } from './hooks';
-import { getWhoAmI } from './ajax';
+import { Route, Routes } from 'react-router-dom';
+import { ScoresView } from './scoresview';
+import { MainStreamView } from './mainstreamview';
+import { NotFoundView } from './notfoundview';
+import { ScoresHeader } from './scoresheader';
 
 function AppView() {
-   const viewName = useSelector((state) => state.mainview);
-   const user = useSelector((state) => state.user);
-
-   const dispatch = useDispatch();
-
-   useEffect(function() {
-      if (typeof user.userid !== 'number') {
-         dispatch(getWhoAmI());
-      }
-   });
-
-   let MainViewComponent;
-   let SecondaryHeaderComponent;
-   let mainView;
-   if (viewName) {
-      mainView = mainViewsIndex[viewName];
-      if (!mainView) {
-         throw Error('No view renderer registered for name "' + viewName + '"');
-      }
-      MainViewComponent = mainView.component;
-      SecondaryHeaderComponent = mainView.headerComponent;
-   }
    return (
       <>
-         <HeaderView/> {}
-         { SecondaryHeaderComponent && <SecondaryHeaderComponent/>}
-         <div className={(mainView && mainView.contentClass) || 'overflow-auto h-full p-5'}>
-            { MainViewComponent && <MainViewComponent/>}
-         </div>
+         <HeaderView/>
+         <Routes>
+            <Route path="/" element = {<div className="overflow-auto h-full p-5">
+                  <MainStreamView />
+               </div>} />
+            <Route path="/scores/*" element={<><ScoresHeader />
+               <div className="overflow-auto h-full">
+                  <ScoresView />
+               </div></>} />
+            <Route path="*" element={<div className="overflow-auto h-full p-5">
+                  <NotFoundView />
+               </div>} />
+         </Routes>
       </>
    );
    

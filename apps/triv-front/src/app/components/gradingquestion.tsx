@@ -1,11 +1,12 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { UpDownThumbs } from './updownthumbs';
 import { formatDateFancy } from '@trivia-nx/days'
 import Button from './button';
 import TextInput from './textinput';
 import QuestionCard from './questioncard';
-import { guessesMap, questionPlus } from '../types/question';
+import { questionPlus } from '../types/question';
 import { GuessWire } from '@trivia-nx/types';
+import { useGradeMutation } from '../datahooks';
 
 function GradingGuess(props: {
    guess: GuessWire,
@@ -28,99 +29,66 @@ export interface grade {
 }
 
 export interface gradingQuestionProps {
-   question: questionPlus,
-   guesses: guessesMap,
-   onSubmit: (question: questionPlus, answer: string, grades: grade[]) => void
-}
-
-interface state {
-   answer: string,
-   gradesById: {
-      [id: string]: boolean
-   },
-   submitting: boolean
+   question: questionPlus
 }
    
-export class GradingQuestion extends React.Component<gradingQuestionProps, state>
-{
-   constructor(props: gradingQuestionProps) {
-      super(props);
-      this.state = {
-         answer: '',
-         gradesById: {
-         },
-         submitting: false
-      };
-      
-      this.onEditInput = this.onEditInput.bind(this);
-      this.onChangeGrade = this.onChangeGrade.bind(this);
-      this.onSubmit = this.onSubmit.bind(this);
+export function GradingQuestion(props: gradingQuestionProps) {
+   const { question } = props;
+   const [answer, setAnswer] = useState('');
+   const [gradesByUserId, setGradesByUserId] = useState({} as Record<number, boolean>);
+   const  { mutate: save, isLoading: saving, isError, error } = useGradeMutation();
+
+   function onEditInput(ev: ChangeEvent<HTMLInputElement>) {
+      setAnswer(ev.target.value);
    }
    
-   onEditInput(ev: ChangeEvent) {
-      this.setState({
-         answer: (ev.target as HTMLInputElement).value
+   function onChangeGrade(guess: GuessWire, correct: boolean) {
+      if (!answer && correct) {
+         // If an answer hasn't been entered yet and we marked something correct,
+         // set that guess as the answer
+         setAnswer(guess.guess);
+      }
+      setGradesByUserId(oldMap => {
+         return { ...oldMap, [guess.userid]: correct};
       });
    }
    
-   onChangeGrade(guess: GuessWire, correct: boolean) {
-      this.setState(state => {
-         const newState = {} as state;
-         if (!state.answer && correct) {
-            // If an answer hasn't been entered yet and we marked something correct,
-            // set that guess as the answer
-            newState.answer = guess.guess;
-         }
+   function onClickSubmit() {
 
-         const mods = {} as {[guessid: string]: boolean};
-         mods[guess.guessid] = correct;
-         newState.gradesById = Object.assign({}, state.gradesById, mods);
-         
-
-         return newState;
-      });
-   }
-   
-   onSubmit() {
-      const guesses = this.props.guesses;
-      const gradesById = this.state.gradesById;
-      const grades = Object.keys(gradesById).map(guessId => ({
-         userid: guesses[guessId].userid,
-         correct: gradesById[guessId]
+      const grades = Object.keys(gradesByUserId).map(userid => ({
+         userid: +userid,
+         correct: gradesByUserId[+userid]
       }));
 
-      this.props.onSubmit(this.props.question, this.state.answer.trim(), grades);
-      this.setState({
-         submitting: true
-      });
+      save({
+         questionid: question.id,
+         answer: answer.trim(),
+         grades: grades
+      }); 
    }
    
-   render() {
-      
-      const question = this.props.question;
-      const answer = this.state.answer;
-      const guesses = Object.values(question.guessesMap);
-      const ready = !!answer.trim() && !this.state.submitting && guesses.every(guess =>
-         Object.prototype.hasOwnProperty.call(this.state.gradesById, guess.guessid)
-      );
+   const guesses = Object.values(question.guessesMap);
+   const ready = !!answer.trim() && !saving && guesses.every(guess =>
+      typeof gradesByUserId[guess.userid] === 'boolean'
+   );
 
-      return (
-         <QuestionCard key={question.day}>
-            <div>
-               <div className="font-bold text-sm mb-1">{formatDateFancy(question.day)}</div>
-               <div>{question.q}</div> 
-            </div>
-            <div>
-               Correct Answer:
-               <TextInput className="ml-3" value={answer} onChange={this.onEditInput}/>
-            </div>    
-            <div>
-               {guesses.map(guess => <GradingGuess key={guess.guessid} guess={guess} correct={this.state.gradesById[guess.guessid]} onChangeGrade={this.onChangeGrade}/>)}
-            </div>
-            <div>
-               <Button disabled={!ready} onClick={this.onSubmit}>Submit Grades</Button>
-            </div>
-         </QuestionCard>    
-      );
-   }
+   return (
+      <QuestionCard key={question.day} loading={saving}>
+         <div>
+            <div className="font-bold text-sm mb-1">{formatDateFancy(question.day)}</div>
+            <div>{question.q}</div> 
+         </div>
+         <div>
+            Correct Answer:
+            <TextInput className="ml-3" value={answer} onChange={onEditInput} readOnly={saving}/>
+         </div>    
+         <div>
+            {guesses.map(guess => <GradingGuess key={guess.guessid} guess={guess} correct={gradesByUserId[guess.userid]} onChangeGrade={onChangeGrade}/>)}
+         </div>
+         <div>
+            <Button disabled={!ready} onClick={onClickSubmit}>Submit Grades</Button>
+         </div>
+         { isError && <p>Something went wrong submitting the grades. [{'' + error}]</p> }
+      </QuestionCard>    
+   );
 };

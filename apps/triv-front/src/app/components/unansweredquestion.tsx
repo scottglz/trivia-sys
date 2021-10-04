@@ -1,67 +1,52 @@
-import React from 'react';
-import { daysAgo, today, formatDateFancy } from '@trivia-nx/days';
+import React, { useState } from 'react';
+import { formatDateFancy } from '@trivia-nx/days';
 import Button from './button';
 import TextInput from './textinput';
 import QuestionCard from './questioncard';
 import { questionPlus } from '../types/question';
+import { useGuessMutation } from '../datahooks';
 
-interface props {
-   question: questionPlus,
-   onSubmit: (question: questionPlus, guess: string) => void
-}
 
-interface state {
-   guess: string,
-   submitting: boolean
-}
-
-export class UnansweredQuestion extends React.Component<props, state>
+export function UnansweredQuestion(props: {question: questionPlus})
 {
-   constructor(props: props) {
-      super(props);
-      this.state = {
-         guess: '',
-         submitting: false
-      };
-      
-      this.onChangeInput = this.onChangeInput.bind(this);
-      this.onClickSubmit = this.onClickSubmit.bind(this);
+   const { question } = props;
+   const [guess, setGuess] = useState('');
+   const { mutate: save, isLoading: saving, isError, error } = useGuessMutation();
+   
+   
+   function onChangeInput(ev: React.ChangeEvent<HTMLInputElement>) {
+      setGuess(ev.target.value);
    }
    
-   onChangeInput(ev: React.ChangeEvent<HTMLInputElement>) {
-      this.setState({
-         guess: ev.target.value
-      });
-   }
-   
-   onClickSubmit(e: React.FormEvent<HTMLFormElement>) {
+   function onClickSubmit(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
-      const guess = this.state.guess.trim();
-      if (guess) {
-         this.props.onSubmit(this.props.question, this.state.guess.trim());
-         this.setState({
-            submitting: true
+      const guessTrimmed = guess.trim();
+      if (guessTrimmed) {
+         save({
+            guess: guessTrimmed,
+            questionid: question.id
          });
       }
    }
 
-   render() {
-      const { question } = this.props;
-      const { guess, submitting } = this.state;
+   return (
+      <QuestionCard key={question.day} loading={saving}>
+         <div>
+            <div className="font-bold text-sm mb-1">{formatDateFancy(question.day)}</div>
+            <div>{question.q}</div> 
+         </div>
 
-      return (
-         <QuestionCard key={question.day}>
-            <div>
-               <div className="font-bold text-sm mb-1">{formatDateFancy(question.day)}</div>
-               <div>{question.q}</div> 
-            </div>
+         <form className="text-right flex gap-2 items-center max-w-full justify-end" onSubmit={onClickSubmit}>
+            <TextInput className="w-72  flex-shrink" type="text" value={guess} placeholder="Your Answer" readOnly={saving} onChange={onChangeInput}/>
+            <Button type="submit" disabled={!guess.trim() || saving}>OK</Button>
+         </form>
 
-            <form className="text-right flex gap-2 items-center max-w-full justify-end" onSubmit={this.onClickSubmit}>
-               <TextInput className="w-72  flex-shrink" type="text" value={this.state.guess} placeholder="Your Answer" onChange={this.onChangeInput}/>
-               <Button type="submit" disabled={ !this.state.guess.trim()}>OK</Button>
-            </form>
-            
-         </QuestionCard>
-      );
-   }
+         { isError && <p>Something went wrong submitting your answer. [{'' + error}]</p> }
+         
+      </QuestionCard>
+   );
 };
+
+UnansweredQuestion.Skeleton = function() {
+   return <QuestionCard className="animate-skeleton h-40" />
+}
