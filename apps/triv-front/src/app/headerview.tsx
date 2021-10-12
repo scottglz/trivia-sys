@@ -20,7 +20,7 @@ function HeaderView() {
       userControls = [<span key="hello">{'Hello ' + whoAmIQuery.data.username}</span>,<Link key="logout" onClick={onClickLogout}>Log out</Link>];
    }
 
-   return <div className="bg-bar p-2 flex justify-between dark-area">
+   return <div className="sticky top-0 h-8 bg-bar px-2 flex justify-between items-center dark-area">
       <div className="flex gap-4">
          <NavLink to="/" end key="main">Main</NavLink>
          <NavLink to="/scores" key="scores">Scores</NavLink>

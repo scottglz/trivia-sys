@@ -12,16 +12,22 @@ function AppView() {
       <>
          <HeaderView/>
          <Routes>
-            <Route path="/" element = {<div className="overflow-auto h-full sm:p-5">
+            <Route path="/" element={
+               <div className="overflow-auto h-full sm:p-5">
                   <MainStreamView />
-               </div>} />
-            <Route path="/scores/*" element={<><ScoresHeader />
-               <div className="overflow-auto h-full">
+               </div>
+            } />
+            <Route path="/scores/*" element={
+               <>
+                  <ScoresHeader />
                   <ScoresView />
-               </div></>} />
-            <Route path="*" element={<div className="overflow-auto h-full sm:p-5">
+               </>
+            } />
+            <Route path="*" element={
+               <div className="overflow-auto h-full sm:p-5">
                   <NotFoundView />
-               </div>} />
+               </div>
+            } />
          </Routes>
       </>
    );

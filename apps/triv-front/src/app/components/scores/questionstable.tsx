@@ -110,8 +110,8 @@ export function QuestionsTable(props: {
    
    if (questions && activeUsers) {
       return (
-         <div>
-            <div className="flex items-end sticky top-0 z-10 bg-green-950 bold">
+         <>
+            <div className="flex items-end sticky top-8 z-10 bg-green-950 bold">
                <ScoresTableHeaderEntry className="w-14" key="d">Date</ScoresTableHeaderEntry>
                <ScoresTableHeaderEntry className="flex-grow-[6] flex-shrink-0 w-0">Question</ScoresTableHeaderEntry>
                <ScoresTableHeaderEntry className="flex-grow flex-shrink-0 w-0">Answer</ScoresTableHeaderEntry>
@@ -122,7 +122,7 @@ export function QuestionsTable(props: {
                   .filter(question => isDayInYear(question.day, year))
                   .map(question => <ScoreRow key={question.day} users={activeUsers} question={question}/>) 
             }
-         </div>
+         </>
       );
    }
    return null;         
