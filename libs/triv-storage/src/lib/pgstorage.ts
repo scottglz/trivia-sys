@@ -2,6 +2,7 @@ import { Pool, PoolConfig, types } from 'pg';
 import * as days from '@trivia-nx/days';
 import { TriviaStorage } from './triviastorage';
 import { QuestionWire } from '@trivia-nx/types';
+import { userFull } from '@trivia-nx/users';
 
 // Get date types as 'YYYY-MM-DD' strings instead of JS Date objects
 const DATE_OID = 1082;
@@ -58,7 +59,7 @@ export default class PGStorage implements TriviaStorage {
      return users;
    }
 
-   async createUser(name: string, email: string, startday: string) {
+   async createUser(name: string, email: string, startday: string): Promise<userFull> {
       await this.query('INSERT INTO "users" ("username", "email", "startday") VALUES ($1, $2, $3)',
          [name, email, startday]
       );

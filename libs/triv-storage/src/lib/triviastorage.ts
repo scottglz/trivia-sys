@@ -3,7 +3,7 @@ import { QuestionWire } from '@trivia-nx/types';
 
 export interface TriviaStorage {
     getUsers: () => Promise<userFull[]>,
-    createUser: (name: string, email: string, startday: string) => Promise<userFull[]>,
+    createUser: (name: string, email: string, startday: string) => Promise<userFull>,
     startStopUser: (userid: number, day: string) => Promise<void>,
     getFullQuestions: (earliestDay: string, latestDay: string) => Promise<QuestionWire[]>,
     upsertQuestions: (questions: {day: string, q: string}[]) => Promise<void>,

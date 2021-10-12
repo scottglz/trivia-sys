@@ -34,6 +34,9 @@
     "ranger": {
       "tags": []
     },
+    "reset-dev-db": {
+      "tags": []
+    },
     "triv-backend": {
       "tags": []
     },
@@ -43,6 +46,9 @@
     "triv-front-e2e": {
       "tags": [],
       "implicitDependencies": ["triv-front"]
+    },
+    "triv-storage": {
+      "tags": []
     },
     "types": {
       "tags": []

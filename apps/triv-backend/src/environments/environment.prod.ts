@@ -1,4 +1,4 @@
-import PgStorage from '../app/storage/pgstorage';
+import { CachingStorage, PgStorage } from '@trivia-nx/triv-storage';
 
 const pgOptions = {
    user: 'trivacct@trivia-postgres-11',
@@ -10,7 +10,7 @@ const pgOptions = {
 export const environment = {
    production: true,
    pgOptions: pgOptions,
-   storage: new PgStorage(pgOptions),
+   storage: new CachingStorage(new PgStorage(pgOptions)),
    port: process.env.PORT || 3333,
    slackChannel: process.env.SLACKHOOK_URL,
    mailgun: {

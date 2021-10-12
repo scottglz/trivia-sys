@@ -34,7 +34,7 @@ export class DAO {
       this.ajax = ajax;
    }
 
-   logout() : Promise<void> {
+   logout(): Promise<void> {
       return this.ajax.post('/auth/logout');
    }
 

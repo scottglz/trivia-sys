@@ -4,17 +4,15 @@ import axios from 'axios';
 import { environment as config } from '../environments/environment';
 
 import tuesdayTriviaAnalyzer from './tuesday-trivia-analyzer';
-import { makeUsersCache } from './userscache';
 import RestError from './resterror';
 import * as days from '@trivia-nx/days';
 import { isUserActive, userFull } from '@trivia-nx/users';
 import shareSocketIo from './sharesocketio';
 import { EditAnswerData, EditGradeData, GetQuestionsData, QuestionWire, SubmitGradesData, SubmitGuessData } from '@trivia-nx/types';
-import { TriviaStorage } from './storage/triviastorage';
+import { TriviaStorage } from '@trivia-nx/triv-storage';
 
 const router = routerMaker();
 const storage = config.storage as TriviaStorage;
-const usersCache = makeUsersCache(storage);
 
 const MILLIS_IN_HOUR = 60 * 60 * 1000;
 
@@ -103,7 +101,7 @@ router.post('/crasho', async function() {
 });
 
 router.get('/users', async function(_request, response) {
-   const users = await usersCache.getUsers(); 
+   const users = await storage.getUsers(); 
    response.json(users);
 });
 
@@ -115,7 +113,7 @@ router.post('/questions', async function(request: RequestFor<GetQuestionsData>, 
    }
 
    const questions = await getFullQuestions(body.earliestDay, body.latestDay);
-   const users = await usersCache.getUsers();
+   const users = await storage.getUsers();
 
    // Eliminate the data the user isn't allowed to know if they haven't guessed yet or aren't
    // logged in
@@ -136,7 +134,7 @@ router.post('/question/details', userRequired, async function(request, response)
 
    const questions = await getFullQuestions(day, day);
    const question = questions[0];
-   const users = await usersCache.getUsers();
+   const users = await storage.getUsers();
    const comments = await storage.getComments(day);
 
    response.json({question, users, comments});
@@ -186,7 +184,7 @@ async function afterGuess(day: string, userGuessing: number) {
       return;
    }
    const question = questions[0];
-   const users = await usersCache.getUsers();
+   const users = await storage.getUsers();
    
    sendSocketUpdates(question, userGuessing);
 
@@ -229,7 +227,7 @@ function sendSocketUpdates(question: QuestionWire, skipUserId: number)
 }
 
 async function getUserIdsToNamesMap(): Promise<Map<number, string>> {
-   const usersArray = await usersCache.getUsers();
+   const usersArray = await storage.getUsers();
    return new Map(usersArray.map(user => [user.userid, user.username]));
 }
 
@@ -335,8 +333,7 @@ router.post('/endvacation', userRequired, async function(request: RequestFor<voi
    }
 
    await storage.startStopUser(user.userid, restartWhen); 
-   usersCache.invalidate();
-   response.json({users: await usersCache.getUsers()});
+   response.json({users: await storage.getUsers()});
 });
 
 

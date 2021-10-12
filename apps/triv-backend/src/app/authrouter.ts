@@ -2,7 +2,6 @@ import { json, Response } from 'express';
 import routerMaker from 'express-promise-router';
 import axios from 'axios';
 import { environment as config } from '../environments/environment';
-import { makeUsersCache } from './userscache';
 import * as jwt from 'jsonwebtoken';
 import * as days from '@trivia-nx/days';
 import RestError from './resterror';
@@ -11,13 +10,16 @@ import * as Mailgun  from 'mailgun-js';
 import { userFull } from '@trivia-nx/users';
 import * as cookieParser from 'cookie-parser';
 import * as querystring from 'querystring';
+import { TriviaStorage } from '@trivia-nx/triv-storage';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const router = routerMaker();
-const storage = config.storage;
-const usersCache = makeUsersCache(storage);
+const storage = config.storage as TriviaStorage;
 const mailgun = new Mailgun(config.mailgun);
+
+const matchesUserEmail = (email: string) => (user: userFull) => user.email === email;
+const matchesUserId = (userid: number) => (user: userFull) => user.userid === userid;
 
 function afterUserAuthenticated(userid: number, res: Response) {
    const webTokenPayload = {
@@ -60,10 +62,10 @@ router.use(async function(req, _res) {
    if (jwtCookieVal) {
       const jwt = await verifyJwt(jwtCookieVal, JWT_SECRET);
       const userid = jwt.userid;
-      const user = await usersCache.userById(userid);
+      const user = (await storage.getUsers()).find(matchesUserId(userid));
       if (!user) {
          console.log('unknown user');
-         console.log(JSON.stringify(await usersCache.getUsers()));
+         console.log(JSON.stringify(await storage.getUsers()));
          throw new RestError(401, 'Unknown User');
       }
       req.user = user;
@@ -82,7 +84,7 @@ router.post('/auth/requestemailsignin', async function(request, response) {
       throw new RestError(400, 'Invalid email address');
    }
 
-   const user = await usersCache.userByEmail(email);
+   const user = (await storage.getUsers()).find(matchesUserEmail(email));
 
    if (!user) {
       throw new RestError(400, `There is no user with the email address "${email}".`);
@@ -125,7 +127,7 @@ router.get('/auth/magiclink/:token([0-9a-fA-F]+)', async function(request, respo
    if (tokenRecord) {
        // Get our userid from that slack info, like slackresponse.user.email
        const userid = tokenRecord.userid;
-       const user = await usersCache.userById(userid);
+       const user = (await storage.getUsers()).find(matchesUserId(userid));
        if (user) {
           afterUserAuthenticated(user.userid, response);
           return;       
@@ -172,10 +174,9 @@ router.get('/auth/slackredirect', async function(request, response) {
       
       // Get our userid from that slack info, like slackresponse.user.email
       const email = slackUser.email;
-      let user = await usersCache.userByEmail(email);
+      let user = (await storage.getUsers()).find(matchesUserEmail(email));
       if (!user) {
          user = await storage.createUser(slackUser.name, slackUser.email, days.dateToDayString(new Date()));
-         usersCache.invalidate();
       }
       afterUserAuthenticated(user.userid, response);
    }

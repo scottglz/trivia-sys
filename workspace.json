@@ -19,6 +19,16 @@
             "jestConfig": "libs/days/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/days",
+            "main": "libs/days/src/index.ts",
+            "tsConfig": "libs/days/tsconfig.lib.json",
+            "generatePackageJson": true
+          }
         }
       }
     },
@@ -43,13 +53,63 @@
         }
       }
     },
+    "reset-dev-db": {
+      "root": "apps/reset-dev-db",
+      "sourceRoot": "apps/reset-dev-db/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/reset-dev-db",
+            "main": "apps/reset-dev-db/src/main.ts",
+            "tsConfig": "apps/reset-dev-db/tsconfig.app.json",
+            "assets": ["apps/reset-dev-db/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/reset-dev-db/src/environments/environment.ts",
+                  "with": "apps/reset-dev-db/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "reset-dev-db:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/reset-dev-db/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/reset-dev-db"],
+          "options": {
+            "jestConfig": "apps/reset-dev-db/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "triv-backend": {
       "root": "apps/triv-backend",
       "sourceRoot": "apps/triv-backend/src",
       "projectType": "application",
       "targets": {
         "deploy": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               "npx nx build triv-backend --prod",
@@ -114,7 +174,7 @@
       "projectType": "application",
       "targets": {
         "deploy": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               "npx nx build triv-front --prod",
@@ -222,6 +282,27 @@
         }
       }
     },
+    "triv-storage": {
+      "root": "libs/triv-storage",
+      "sourceRoot": "libs/triv-storage/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/triv-storage/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/triv-storage"],
+          "options": {
+            "jestConfig": "libs/triv-storage/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "types": {
       "root": "libs/types",
       "sourceRoot": "libs/types/src",
@@ -283,5 +364,6 @@
         "linter": "eslint"
       }
     }
-  }
+  },
+  "defaultProject": "reset-dev-db"
 }
