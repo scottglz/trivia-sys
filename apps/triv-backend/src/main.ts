@@ -54,7 +54,7 @@ io.use((socket: mySocket, next) => {
       const cookieVals = cookie.parse(cookieHeader);
       const jwtCookie = cookieVals[JWT_COOKIE];
       if (jwtCookie) {
-         jwt.verify(jwtCookie, process.env.JWT_SECRET, function(err, payload) {
+         jwt.verify(jwtCookie, config.JWT_SECRET, function(err, payload) {
             if (err) {
                // ?
             }

@@ -35,28 +35,39 @@ class FetchCache {
    }
 }
 
+class NotACache {
+   accessData<T>(key: string[], fetcher: () => Promise<T>): Promise<T> {
+      return fetcher();
+   }
+
+   invalidate(keyStart: string) {
+      //  Empty
+   }
+}
+
 
 export default class CachingStorage implements TriviaStorage {
    readonly storage: TriviaStorage;
-   readonly cache = new FetchCache();
+   readonly usersCache = new FetchCache();
+   readonly cache = new NotACache();
 
    constructor(storage: TriviaStorage) {
       this.storage = storage;
    }
 
    getUsers() {
-      return this.cache.accessData(['users'], () => this.storage.getUsers());
+      return this.usersCache.accessData(['users'], () => this.storage.getUsers());
    }
 
    async createUser(name: string, email: string, startday: string) {
       const newUser = await this.storage.createUser(name, email, startday);
-      this.cache.invalidate('users');
+      this.usersCache.invalidate('users');
       return newUser;
    }
 
    async startStopUser(userid: number, day: string) {
       await this.storage.startStopUser(userid, day);
-      this.cache.invalidate('users');
+      this.usersCache.invalidate('users');
    }
 
    getFullQuestions(earliestDay: string, latestDay: string) {

@@ -29,7 +29,7 @@ function ScoresTableBodyEntry({className='', children}: childrenAndClassNameProp
 }
 
 function UserAnswerHeader({name}: { name: string }) {
-   return <div className="truncate vertical-rl text-right pb-2 h-32 w-7">{name}</div>;
+   return <div className="truncate vertical-rl text-right pb-2 w-7">{name}</div>;
 }
 
 function UserAnswerCell({className='', children}: childrenAndClassNameProps) {
@@ -111,7 +111,7 @@ export function QuestionsTable(props: {
    if (questions && activeUsers) {
       return (
          <>
-            <div className="flex items-end sticky top-8 z-10 bg-green-950 bold">
+            <div className="flex items-end sticky top-[calc(2rem-1px)] z-10 bg-green-950 bold pt-4">
                <ScoresTableHeaderEntry className="w-14" key="d">Date</ScoresTableHeaderEntry>
                <ScoresTableHeaderEntry className="flex-grow-[6] flex-shrink-0 w-0">Question</ScoresTableHeaderEntry>
                <ScoresTableHeaderEntry className="flex-grow flex-shrink-0 w-0">Answer</ScoresTableHeaderEntry>

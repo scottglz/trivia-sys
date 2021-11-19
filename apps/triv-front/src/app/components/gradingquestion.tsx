@@ -75,7 +75,7 @@ export function GradingQuestion(props: gradingQuestionProps) {
    return (
       <QuestionCard key={question.day} loading={saving}>
          <div>
-            <div className="font-bold text-sm mb-1">{formatDateFancy(question.day)}</div>
+            <div className="font-bold text-sm mb-1"><p>Grade this Question</p><p>{formatDateFancy(question.day)}</p></div>
             <div>{question.q}</div> 
          </div>
          <div>

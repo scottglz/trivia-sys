@@ -9,7 +9,8 @@ export interface userFull {
    username: string,
    startday: string,
    email: string,
-   activeRanges: range[]
+   activeRanges: range[],
+   avatarUrl: string
 }
 
 /**

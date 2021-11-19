@@ -1,4 +1,5 @@
 import { Pool, PoolConfig, types } from 'pg';
+import * as gravatar from 'gravatar';
 import * as days from '@trivia-nx/days';
 import { TriviaStorage } from './triviastorage';
 import { QuestionWire } from '@trivia-nx/types';
@@ -55,6 +56,10 @@ export default class PGStorage implements TriviaStorage {
      // Hmm?  
      for (const user of users) {
         user.activeRanges = activeRangesMap[user.userid];
+        user.avatarUrl = gravatar.url(user.email, {
+           protocol: 'https',
+           default: 'robohash'
+        });
      }
      return users;
    }

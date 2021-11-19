@@ -1,13 +1,9 @@
-import './app/frontend.css';
 import AppView from './app/appview';
 import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
-import { io } from 'socket.io-client';
 import { setAuthenticationFailureHandler} from './app/ajax';
-import { QuestionWire } from '@trivia-nx/types';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools'
-import { updateCacheQuestion } from './app/datahooks';
 import { BrowserRouter } from 'react-router-dom';
 
 document.addEventListener('DOMContentLoaded', function () {

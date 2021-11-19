@@ -11,14 +11,14 @@ function ScoresViewBase() {
    let year = +(yearParam||0) || thisYear;
    year = Math.max(Math.min(year, thisYear), 2017);
    return ( 
-      <div className="flex flex-col gap-8 p-5">
+      <div className="p-5">
          <TotalScoresTable year={year} />
          <QuestionsTable year={year} />
       </div>
    );
 };
 
-function ScoresView() {
+export function ScoresView() {
    return (
       <Routes>
          <Route path="/" element={<ScoresViewBase/>} />
@@ -27,7 +27,3 @@ function ScoresView() {
       </Routes>
    );
 }
-
-const moduleObj = hot(ScoresView);
-export { moduleObj as ScoresView };
-

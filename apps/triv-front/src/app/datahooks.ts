@@ -186,8 +186,8 @@ export function updateCacheQuestion(queryClient: QueryClient, question: Question
 }
 
 
-export function useSendLoginEmailRequestMutation(): UseMutationResult<void, RestErrorError, SendLoginEmailRequestData, unknown> {
-   return useMutation((vars: SendLoginEmailRequestData) => dao.sendLoginEmailRequest(vars));
+export function useSendLoginEmailRequestMutation() {
+   return useMutation<void, RestErrorError, SendLoginEmailRequestData>((vars: SendLoginEmailRequestData) => dao.sendLoginEmailRequest(vars));
 }
 
 export function useLogoutMutation() {

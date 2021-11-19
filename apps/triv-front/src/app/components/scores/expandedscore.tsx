@@ -7,6 +7,8 @@ import { GuessWire} from '@trivia-nx/types';
 import QuestionCard from '../questioncard';
 import TextInput from '../textinput';
 import { useEditGradeMutation, useEditAnswerMutation } from '../../datahooks';
+import Avatar from '../avatar';
+import { isMouseEventInElementRef, useDocumentMouseDown } from '../../uihooks';
 
 
 function GuessEditor(props: {
@@ -44,13 +46,10 @@ function UserAnswerDetails(props: {
 
    const popupRef = useRef<HTMLDivElement>(null);
 
-   useEffect(function() {
-      const onDocMousedown = function(event: MouseEvent) {
-         if (!popupRef.current || !event.target || !popupRef.current.contains(event.target as HTMLElement))
+   useDocumentMouseDown(function(ev) {
+      if (!isMouseEventInElementRef(ev, popupRef)) {
          setShowingEditChoices(false);
       }
-      document.addEventListener('mousedown', onDocMousedown);
-      return () => document.removeEventListener('mousedown', onDocMousedown);
    });
 
    const editGradeMutation = useEditGradeMutation();
@@ -70,10 +69,10 @@ function UserAnswerDetails(props: {
    }
 
 
-   const classes = classNames('relative rounded shadow-md py-1 px-4 text-right', guess.correct === true && 'text-black bg-green-200', guess.correct === false && 'text-white bg-red-500');
+   const classes = classNames('relative rounded shadow-md py-1 px-2 text-right', guess.correct === true && 'text-black bg-green-200', guess.correct === false && 'text-white bg-red-500');
    return (
       <div className={classes} onClick={onClickShowEditChoices}>
-         <span className="font-bold float-left block mr-4">{user.username}</span>
+         <span className="float-left block mr-4 font-bold"><Avatar user={user} size="s" className="inline mr-2 align-top hover:scale-[2] transition-transform"/>{user.username}</span>
          <span>{guess.guess}</span>
          { showingEditChoices && (
             <div ref={popupRef} className="absolute -bottom-2 -right-2 flex gap-2">

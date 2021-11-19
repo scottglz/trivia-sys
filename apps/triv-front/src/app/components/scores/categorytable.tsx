@@ -61,7 +61,7 @@ export function CategoryTable(props: props)  {
       else {
          const value = score.score.value;
          const outOf = score.score.outOf;
-         return <div className="flex justify-between py-0 px-1 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>
+         return <div className="flex gap-1 justify-between py-0 px-2 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>
             <span>{score.username}</span>
             <span className="text-right w-20" title={outOf ? `${value} of ${outOf} attempts` : ''}>{value}{outOf ? ' (' + asBattingAverage(value, outOf) + ')' : ''}</span>
          </div>;
@@ -69,9 +69,9 @@ export function CategoryTable(props: props)  {
    });
 
    return <div>
-      <div className="bg-black text-gray-200 font-bold text-center py-0.5 border border-b-0 border-solid border-gray-500 rounded-t-xl">
+      <div className="bg-black text-gray-300 font-semibold pl-2 py-0.5 border-r border-gray-500 rounded-t-lg">
          {category.name}
-         {category.graphable && <span className="text-white float-right mr-2 cursor-pointer" title="Open Graph" onClick={onClickShowGraph}><MdShowChart /></span>}
+         {category.graphable && <span className="text-white float-right mr-2 mt-1 cursor-pointer" title="Open Graph" onClick={onClickShowGraph}><MdShowChart /></span>}
       </div>
       {userRows}
       { 

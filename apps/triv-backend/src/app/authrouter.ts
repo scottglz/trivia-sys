@@ -12,7 +12,7 @@ import * as cookieParser from 'cookie-parser';
 import * as querystring from 'querystring';
 import { TriviaStorage } from '@trivia-nx/triv-storage';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = config.JWT_SECRET;
 
 const router = routerMaker();
 const storage = config.storage as TriviaStorage;
@@ -153,7 +153,7 @@ router.get('/auth/slackredirect', async function(request, response) {
       const slackresponse = await axios.get('https://slack.com/api/oauth.access?' +
          querystring.stringify({
             client_id: '456894231392.459012826326',
-            client_secret: process.env.SLACK_OATH_SECRET,
+            client_secret: config.SLACK_OATH_SECRET,
             code: code,
             redirect_uri: redirect_uri
          })

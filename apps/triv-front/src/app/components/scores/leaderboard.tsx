@@ -29,7 +29,6 @@ export function Leaderboard(props: {
       }
       return (
          <div className="flex flex-col gap-2 items-center xl:fixed xl:right-10 xl:top-16 xl:dark-area">
-            <h2 className="font-bold text-plain-color">Leaderboards</h2>
             <div className="flex gap-4 xl:flex-col xl:items-stretch overflow-x-auto max-w-full">
                {
                   leaderboardCategories.map(category => (
@@ -37,7 +36,7 @@ export function Leaderboard(props: {
                   ))
                }
             </div>
-            <NavLink to="/scores">All Scores and Stats</NavLink>
+            <NavLink to="/scores">More Scores</NavLink>
          </div>
       );
    }

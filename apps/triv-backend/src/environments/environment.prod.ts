@@ -12,10 +12,14 @@ export const environment = {
    pgOptions: pgOptions,
    storage: new CachingStorage(new PgStorage(pgOptions)),
    port: process.env.PORT || 3333,
-   slackChannel: process.env.SLACKHOOK_URL,
    mailgun: {
       apiKey: process.env.MAILGUN_APIKEY,
       domain: 'mg.thatpagethere.com'
    },
-   mailFrom: 'Trivia Bot <triviabot@thatpagethere.com>'
+   mailFrom: 'Trivia Bot <triviabot@thatpagethere.com>',
+   MAILGUN_APIKEY: process.env.MAILGUN_APIKEY,
+   POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
+   SLACK_OATH_SECRET: process.env.SLACK_OATH_SECRET,
+   JWT_SECRET: process.env.JWT_SECRET,
+   SLACKHOOK_URL: process.env.SLACKHOOK_URL
 };

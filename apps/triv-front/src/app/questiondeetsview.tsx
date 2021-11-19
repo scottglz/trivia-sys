@@ -1,6 +1,5 @@
 /*import React from 'react';
 import { connect } from 'react-redux';
-import { hot } from 'react-hot-loader/root';
 import { actions } from './action';
 import { needsReload, isReloading, questionDeetsData } from './selectors/selectors';
 import { loadQuestionDetails, submitComment } from './ajax';
@@ -83,6 +82,5 @@ wrapper.addRoutes = function(page, dispatch) {
    });   
 };
 
-const hotwrapped = hot(wrapper);
-export {hotwrapped as QuestionDeetsView};
+export {wrapper as QuestionDeetsView};
 */

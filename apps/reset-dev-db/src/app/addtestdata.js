@@ -13,6 +13,28 @@ export default async function(storage) {
    const dayBeforeYesterday = daysAgo(2);
    const threeDaysAgo = daysAgo(3);
    
+
+   function doneQuestion(day) {
+      return  { day, q: 'What\'s the third letter of the Greek alphabet, after alpha and beta?', a: 'Gamma' };
+   }
+
+   function doneQuestionGuesses(day) {
+      return [
+         { day, userid: 2, guess: 'Gamma', correct: true},
+         { day, userid: 3, guess: 'Chi', correct: false },
+         { day, userid: 4, guess: 'delta', correct: false},
+         { day, userid: 1, guess: 'gamma', correct: true}
+      ];
+   }
+
+   const bulkOldQuestions = [];
+   const bulkOldGuesses = [];
+   for (let n=3; n <= 30; n++) {
+      const day = daysAgo(n);
+      bulkOldQuestions.push(doneQuestion(day));
+      bulkOldGuesses.push(...doneQuestionGuesses(day));
+   }
+
    var users = [
 
       { username: 'Scott G', startday: '2018-01-01', email: 'scott.glazer@igrafx.com'},
@@ -23,7 +45,7 @@ export default async function(storage) {
    ];
    
    var questions = [
-      { day: threeDaysAgo, q: 'What\'s the third letter of the Greek alphabet, after alpha and beta?', a: 'Gamma' },
+      ...bulkOldQuestions,
       { day: dayBeforeYesterday, q: 'What craft that launched in 1947 was christened for a name of the Incan creator god Viracocha?' },
       { day: yesterday, q: 'What is the world\'s largest family-owned liquor company, headquartered in Bermuda since leaving Cuba in the 1960s?'},
       { day: today, q: 'What groundbreaking semi-synthetic fiber was originally called "viscose" or "artificial silk" when it was first made from wood pulp in 1894?'},
@@ -31,10 +53,7 @@ export default async function(storage) {
    ];
    
    var guesses = [
-      { day:  threeDaysAgo, userid: 2, guess: 'Gamma', correct: true},
-      { day:  threeDaysAgo, userid: 3, guess: 'Chi', correct: false },
-      { day:  threeDaysAgo, userid: 4, guess: 'delta', correct: false},
-      { day:  threeDaysAgo, userid: 1, guess: 'gamma', correct: true},
+      ...bulkOldGuesses,
      
       { day:  dayBeforeYesterday, userid: 2, guess: 'Kon-Tiki' },
       { day:  dayBeforeYesterday, userid: 3, guess: 'No idea' },

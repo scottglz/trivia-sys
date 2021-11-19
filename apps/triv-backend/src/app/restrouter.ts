@@ -4,6 +4,7 @@ import axios from 'axios';
 import { environment as config } from '../environments/environment';
 
 import tuesdayTriviaAnalyzer from './tuesday-trivia-analyzer';
+import { analyze as analyzeMafiaEmail } from './trivia-mafia-analyzer';
 import RestError from './resterror';
 import * as days from '@trivia-nx/days';
 import { isUserActive, userFull } from '@trivia-nx/users';
@@ -89,10 +90,11 @@ router.put('/email', async function(request, response) {
    const body = request.body;
    const dateNum = body.date;
    const emailBody = body.body;
-   const questions = tuesdayTriviaAnalyzer(dateNum, emailBody);
+   const questions = analyzeMafiaEmail(dateNum, emailBody);
    await storage.upsertQuestions(questions);
    response.json(questions);
 });
+
 
 router.post('/crasho', async function() {
    const x = null;
@@ -173,7 +175,7 @@ function messageSlack(message: string) {
    const data = {
       text: message
    };
-   axios.post(config.slackChannel, data);
+   axios.post(config.SLACKHOOK_URL, data);
 }
 
 

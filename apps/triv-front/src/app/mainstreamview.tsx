@@ -6,12 +6,11 @@ import { today } from '@trivia-nx/days';
 import { isUserActive } from '@trivia-nx/users';
 import { Leaderboard } from './components/scores/leaderboard';
 import React, { ReactNode } from 'react';
-import { hot } from 'react-hot-loader/root';
 import { SigninView } from './signinview';
 import { useGradingQuestions, useRecentQuestions, useUnansweredQuestions, useUsers, useUser, useWhoAmI } from './datahooks';
 
 function VerticalStream(props: { children: ReactNode }) {
-   return <div className=" w-stream max-w-full bg-white text-black flex flex-col gap-12 py-7 px-1.5vw m-auto min-h-full light-area">{props.children}</div>;
+   return <div className="w-stream max-w-full bg-white text-black flex flex-col gap-12 py-7 px-1.5vw m-auto min-h-full light-area">{props.children}</div>;
 }
 
 function StreamHeadline({children}: { children: ReactNode }) {
@@ -60,7 +59,6 @@ function QuestionsToGradeSection() {
    
    return (
       <>
-         <StreamHeadline>Questions to grade</StreamHeadline>
          { questions.map(question => <GradingQuestion key={question.id} question={question} />) }
       </>
    );
@@ -84,13 +82,12 @@ function RecentQuestionsSection() {
    
    return (
       <>
-         <StreamHeadline>Recent Questions</StreamHeadline> 
          { questions.map(question => <ExpandedScore key={question.id} question={question} users={users} editable={activeUser && activeUser.userid===1}/>) }
       </>
    );
 }
 
-function MainStreamView() {
+export function MainStreamView() {
    return (
       <VerticalStream>
          <ServerErrorSection />
@@ -103,7 +100,3 @@ function MainStreamView() {
       </VerticalStream>
    );
 }
-
-const wrapper = hot(MainStreamView);
-export { wrapper as MainStreamView };
-
