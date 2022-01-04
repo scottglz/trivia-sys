@@ -81,7 +81,8 @@ export default class PGStorage implements TriviaStorage {
    
    async upsertQuestions(questions: {day: string, q: string}[]) {
       for (const question of questions) {
-         await this.query('INSERT INTO "questions" ("day", "q") VALUES ($1, $2) ON CONFLICT DO NOTHING', [question.day, question.q]);
+         await this.query('DELETE FROM "questions" WHERE "day"=$1', [question.day]);
+         await this.query('INSERT INTO "questions" ("day", "q") VALUES ($1, $2)', [question.day, question.q]);
       }
    }
    

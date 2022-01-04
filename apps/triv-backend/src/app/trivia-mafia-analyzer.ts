@@ -15,25 +15,23 @@ export function getQuestions(body: string): string[] {
    return ret;
 }
 
-const FRIDAY = 5;
+const THURSDAY = 4;
 
 export function analyze(utcDate: number, body: string): { day: string, q: string }[] {
    const day = new Date(utcDate).getUTCDay();
    const rawQuestions = getQuestions(body);
 
-   // Mon's Mail -- Tuesday's question
-   // ...
-   // Thursday's Mail -- Friday's question
-   // Friday's Mail -- Sat, Sun, Mon's question
+   // Always load up the next 5 days worth of questions, unless if it's (themed)
+   // Thursday, when we just do 1
 
    let questions: string[];
-   if (day === FRIDAY) {
-      // Need three for the weekend. Take the middle 3
-      questions = rawQuestions.slice(1, 4);
+   if (day === THURSDAY) {
+      // Just the third
+      questions = [rawQuestions[2]];
+      
    }
    else {
-      // Just the third
-      questions = rawQuestions.slice(2, 3);
+      questions = [rawQuestions[2], rawQuestions[3], rawQuestions[1], rawQuestions[4], rawQuestions[0]];
    }
    
    return questions.map(function(question, i) {

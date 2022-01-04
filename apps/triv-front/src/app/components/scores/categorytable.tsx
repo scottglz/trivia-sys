@@ -6,7 +6,6 @@ import { processedScore } from '../../processscores';
 import { questionPlus } from '../../types/question';
 import { graphDatum } from '../../scorecategories';
 
-
 const ScoresGraph = lazy(() => 
    import(/* webpackChunkName: "scoresgraph" */ './scoresgraph')
    .then(module => ({default: module.ScoresGraph})));
@@ -37,6 +36,31 @@ type props = {
 };
 
 
+function TableBody(props: props) {
+   const { category, activeUsers, questionsArray }  = props;
+   const scores = category.scores();
+   const userRows = activeUsers.map(function(user, i) {
+      const score = scores[i];
+      if (!score) {
+         return <div className="flex justify-between px-2 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>&nbsp;</div>;
+      }
+      else {
+         const value = score.score.value;
+         const outOf = score.score.outOf;
+         return <div className="flex gap-1 justify-between px-2 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>
+            <span>{score.username}</span>
+            <span className="text-right w-20" title={outOf ? `${value} of ${outOf} attempts` : ''}>{value}{outOf ? ' (' + asBattingAverage(value, outOf) + ')' : ''}</span>
+         </div>;
+      }
+   });
+
+   return (
+      <div>
+         { userRows }
+      </div>
+   );
+}
+
 export function CategoryTable(props: props)  {
    const [graphData, setGraphData] = useState<graphDatum[]|null>(null);
 
@@ -52,28 +76,14 @@ export function CategoryTable(props: props)  {
       setGraphData(null);   
    }
 
-   const scores = category.scores();
-   const userRows = activeUsers.map(function(user, i) {
-      const score = scores[i];
-      if (!score) {
-         return <div className="flex justify-between py-0 px-1 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>&nbsp;</div>;
-      }
-      else {
-         const value = score.score.value;
-         const outOf = score.score.outOf;
-         return <div className="flex gap-1 justify-between py-0 px-2 bg-white text-black even:bg-green-200 leading-snug" key={user.userid}>
-            <span>{score.username}</span>
-            <span className="text-right w-20" title={outOf ? `${value} of ${outOf} attempts` : ''}>{value}{outOf ? ' (' + asBattingAverage(value, outOf) + ')' : ''}</span>
-         </div>;
-      }
-   });
+   
 
    return <div>
       <div className="bg-black text-gray-300 font-semibold pl-2 py-0.5 border-r border-gray-500 rounded-t-lg">
          {category.name}
          {category.graphable && <span className="text-white float-right mr-2 mt-1 cursor-pointer" title="Open Graph" onClick={onClickShowGraph}><MdShowChart /></span>}
       </div>
-      {userRows}
+      <TableBody {...props} />
       { 
          graphData && (
             <MyModal onClose={onCloseGraph}>
