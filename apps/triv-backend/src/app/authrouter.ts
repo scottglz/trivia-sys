@@ -1,4 +1,4 @@
-import { json, Response } from 'express';
+import { json, Response, Request } from 'express';
 import routerMaker from 'express-promise-router';
 import axios from 'axios';
 import { environment as config } from '../environments/environment';
@@ -6,7 +6,8 @@ import * as jwt from 'jsonwebtoken';
 import * as days from '@trivia-nx/days';
 import RestError from './resterror';
 import * as loginTokens from './logintokens';
-import * as Mailgun  from 'mailgun-js';
+import Mailgun from 'mailgun.js';
+import * as formData from 'form-data';
 import { userFull } from '@trivia-nx/users';
 import * as cookieParser from 'cookie-parser';
 import * as querystring from 'querystring';
@@ -16,7 +17,12 @@ const JWT_SECRET = config.JWT_SECRET;
 
 const router = routerMaker();
 const storage = config.storage as TriviaStorage;
-const mailgun = new Mailgun(config.mailgun);
+const mailgunApp = new Mailgun(formData);
+
+const mailgunClient = mailgunApp.client({
+   username: 'api',
+   key: config.mailgun.apiKey
+});
 
 const matchesUserEmail = (email: string) => (user: userFull) => user.email === email;
 const matchesUserId = (userid: number) => (user: userFull) => user.userid === userid;
@@ -37,7 +43,7 @@ function verifyJwt(webTokenEncoded: string, secret: string) {
             reject(new RestError(401, 'Bad or Expired Web Token'));
          }
          else {
-            resolve(decoded);
+            resolve(decoded as jwt.JwtPayload);
          }
       });
    });
@@ -46,18 +52,18 @@ function verifyJwt(webTokenEncoded: string, secret: string) {
 router.use(json());
 
 
-declare module 'express-serve-static-core' {
-   interface Request {
-       user?: userFull
-   }
-}
+
 
 router.use(cookieParser());
 
 const JWT_COOKIE = 'djywhxk';
 
+interface RequestPlus extends Request {
+   user: userFull
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-router.use(async function(req, _res) {
+router.use(async function(req: RequestPlus, _res) {
    const jwtCookieVal = req.cookies[JWT_COOKIE];
    if (jwtCookieVal) {
       const jwt = await verifyJwt(jwtCookieVal, JWT_SECRET);
@@ -105,17 +111,7 @@ This link is only valid for five minutes from when this message was sent.
 </p> 
 `      
    };
-   await new Promise<void>((resolve, reject) => {
-      mailgun.messages().send(data, function (error: unknown) {
-         if (error) {
-            reject(error);
-         }
-         else {
-            resolve();
-         }
-      });
-   });
-
+   await mailgunClient.messages.create(config.mailgun.domain, data);
    response.json({ok: true});
 });
 
@@ -134,9 +130,7 @@ router.get('/auth/magiclink/:token([0-9a-fA-F]+)', async function(request, respo
        }
    }
 
-   response.render('page.html', {
-      message: 'Sorry, your magic link is either expired, already used, or invalid.'
-   });
+   response.send('Sorry, your magic link is either expired, already used, or invalid.');
 });
 
 router.get('/auth/slackredirect', async function(request, response) {

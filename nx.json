@@ -14,8 +14,14 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
-        "accessToken": "ZjY5ODFkN2QtY2I5YS00YTBhLThlY2QtM2MzMzFkNDllY2IyfHJlYWQtd3JpdGU="
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ],
+        "accessToken": "ZjY5ODFkN2QtY2I5YS00YTBhLThlY2QtM2MzMzFkNDllY2IyfHJlYWQtd3JpdGU=",
+        "parallel": 1
       }
     }
   },
@@ -27,34 +33,24 @@
       }
     ]
   },
-  "projects": {
-    "days": {
-      "tags": []
-    },
-    "ranger": {
-      "tags": []
-    },
-    "reset-dev-db": {
-      "tags": []
-    },
-    "triv-backend": {
-      "tags": []
-    },
-    "triv-front": {
-      "tags": []
-    },
-    "triv-front-e2e": {
-      "tags": [],
-      "implicitDependencies": ["triv-front"]
-    },
-    "triv-storage": {
-      "tags": []
-    },
-    "types": {
-      "tags": []
-    },
-    "users": {
-      "tags": []
+  "cli": {
+    "defaultCollection": "@nrwl/react"
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint"
+      }
     }
-  }
+  },
+  "defaultProject": "reset-dev-db"
 }

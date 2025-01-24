@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from './components/link';
 import { Link as RouterLink } from 'react-router-dom'
 import { useLogoutMutation, useWhoAmI } from './datahooks';
-import NavLink from './components/navlink';
 import Avatar from './components/avatar';
 import { userFull } from '@trivia-nx/users';
 import { isMouseEventInElementRef, useDocumentMouseDown } from './uihooks';
@@ -48,7 +47,6 @@ function UserControls() {
 
    if (whoAmIQuery.data) {
       const user = whoAmIQuery.data;
-      const { username, avatarUrl } = user;
       return (
          <div className='inline-block relative'>
             <Avatar user={user} className="mx-2 inline cursor-pointer hover:scale-125 hover:translate-y-1 transition-transform" onClick={() => setPopupUp((up) => !up)}/>

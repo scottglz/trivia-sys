@@ -1,0 +1,87 @@
+{
+  "sourceRoot": "apps/triv-backend/src",
+  "projectType": "application",
+  "targets": {
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx nx build triv-backend --prod",
+          "docker build -f ./apps/triv-backend/Dockerfile . -t triv-backend-image",
+          "docker tag triv-backend-image trivacr.azurecr.io/triv-backend:latest",
+          "az acr login --name trivacr",
+          "docker push trivacr.azurecr.io/triv-backend",
+          "az container restart --resource-group trivRS --name triv-backend"
+        ],
+        "parallel": false
+      }
+    },
+    "deploy-full": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx nx build triv-backend --prod",
+          "docker build -f ./apps/triv-backend/Dockerfile . -t triv-backend-image",
+          "docker tag triv-backend-image trivacr.azurecr.io/triv-backend:latest",
+          "az acr login --name trivacr",
+          "docker push trivacr.azurecr.io/triv-backend",
+          "create-az-container.bat"
+        ],
+        "parallel": false
+      }
+    },
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/triv-backend",
+        "main": "apps/triv-backend/src/main.ts",
+        "tsConfig": "apps/triv-backend/tsconfig.app.json",
+        "assets": ["apps/triv-backend/src/assets"],
+        "generatePackageJson": true,
+        "target": "node",
+        "compiler": "tsc"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/triv-backend/src/environments/environment.ts",
+              "with": "apps/triv-backend/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "triv-backend:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "triv-backend:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/triv-backend/**/*.ts"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/triv-backend"],
+      "options": {
+        "jestConfig": "apps/triv-backend/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

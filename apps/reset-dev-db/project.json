@@ -1,0 +1,53 @@
+{
+  "sourceRoot": "apps/reset-dev-db/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/reset-dev-db",
+        "main": "apps/reset-dev-db/src/main.ts",
+        "tsConfig": "apps/reset-dev-db/tsconfig.app.json",
+        "assets": ["apps/reset-dev-db/src/assets"],
+        "target": "node",
+        "compiler": "tsc"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/reset-dev-db/src/environments/environment.ts",
+              "with": "apps/reset-dev-db/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "reset-dev-db:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/reset-dev-db/**/*.ts"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/reset-dev-db"],
+      "options": {
+        "jestConfig": "apps/reset-dev-db/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

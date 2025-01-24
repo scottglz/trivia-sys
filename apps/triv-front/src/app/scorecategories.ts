@@ -233,12 +233,14 @@ export function getScoreCategories(year: number) : scoreCategoryDefinition[] {
       }
    });
    
-   ret.push({
-      name: 'Mondays',
-      getUserScore: function(gradedQuestions, user) {
-         return getMondaysScore(gradedQuestions, user);
-      }
-   });
+   if (year < 2022) {
+      ret.push({
+         name: 'Mondays',
+         getUserScore: function(gradedQuestions, user) {
+            return getMondaysScore(gradedQuestions, user);
+         }
+      });
+   }
    
    
    return ret;

@@ -9,11 +9,10 @@ function withOpacity(variableName) {
 
 module.exports = {
   mode: 'jit',
-  purge: [
+  content: [
     join(__dirname, 'src/**/*.{js,ts,jsx,tsx,html}'),
     ...createGlobPatternsForDependencies(__dirname)
   ],
-  darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
       textColor: {

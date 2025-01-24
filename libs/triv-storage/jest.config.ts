@@ -1,5 +1,6 @@
-module.exports = {
-  displayName: 'users',
+/* eslint-disable */
+export default {
+  displayName: 'triv-storage',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,5 +12,5 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/libs/users',
+  coverageDirectory: '../../coverage/libs/triv-storage',
 };

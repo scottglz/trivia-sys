@@ -1,0 +1,94 @@
+{
+  "sourceRoot": "apps/triv-front/src",
+  "projectType": "application",
+  "targets": {
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx nx build triv-front --prod",
+          "az storage blob delete-batch -s $web --account-name cs410033fff8474cf39",
+          "az storage blob upload-batch -s ./dist/apps/triv-front -d $web --account-name cs410033fff8474cf39"
+        ],
+        "parallel": false
+      }
+    },
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/triv-front",
+        "index": "apps/triv-front/src/index.html",
+        "main": "apps/triv-front/src/main.tsx",
+        "polyfills": "apps/triv-front/src/polyfills.ts",
+        "tsConfig": "apps/triv-front/tsconfig.app.json",
+        "assets": [
+          "apps/triv-front/src/favicon.ico",
+          "apps/triv-front/src/assets"
+        ],
+        "styles": ["apps/triv-front/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack",
+        "postcssConfig": "apps/triv-front/postcss.config.js"
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/triv-front/src/environments/environment.ts",
+              "with": "apps/triv-front/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "extractCss": true,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "options": {
+        "buildTarget": "triv-front:build",
+        "hmr": true,
+        "proxyConfig": "apps/triv-front/proxy.conf.json"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "triv-front:build:production",
+          "hmr": false
+        },
+        "development": {
+          "buildTarget": "triv-front:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/triv-front/**/*.{ts,tsx,js,jsx}"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/triv-front"],
+      "options": {
+        "jestConfig": "apps/triv-front/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

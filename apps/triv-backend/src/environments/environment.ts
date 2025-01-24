@@ -4,7 +4,7 @@ const pgOptions = {
   user: 'postgres',
   host: process.env.IS_DOCKER ? 'host.docker.internal' : 'localhost',
   database: 'postgres',
-  password: process.env.DEV_POSTGRES_PASSWORD
+  password: process.env.NX_DEV_POSTGRES_PASSWORD
 };
 
 export const environment = {
@@ -13,15 +13,15 @@ export const environment = {
    storage: new CachingStorage(new PgStorage(pgOptions)),
    port: process.env.PORT || 3333,
    mailgun: {
-      apiKey: process.env.DEV_MAILGUN_APIKEY,
+      apiKey: process.env.NX_DEV_MAILGUN_APIKEY,
       domain: 'mg.thatpagethere.com'
    },
    mailFrom: 'Trivia Bot <triviabot@thatpagethere.com>',
-   MAILGUN_APIKEY: process.env.DEV_MAILGUN_APIKEY,
-   POSTGRES_PASSWORD: process.env.DEV_POSTGRES_PASSWORD,
-   SLACK_OATH_SECRET: process.env.DEV_SLACK_OATH_SECRET,
-   JWT_SECRET: process.env.DEV_JWT_SECRET,
-   SLACKHOOK_URL: process.env.DEV_SLACKHOOK_URL
+   MAILGUN_APIKEY: process.env.NX_DEV_MAILGUN_APIKEY,
+   POSTGRES_PASSWORD: process.env.NX_DEV_POSTGRES_PASSWORD,
+   SLACK_OATH_SECRET: process.env.NX_DEV_SLACK_OATH_SECRET,
+   JWT_SECRET: process.env.NX_DEV_JWT_SECRET,
+   SLACKHOOK_URL: process.env.NX_DEV_SLACKHOOK_URL
 };
 
 

@@ -1,14 +1,12 @@
 import { json, Request, Response, urlencoded } from 'express';
 import routerMaker from 'express-promise-router';
 import axios from 'axios';
+import { createSession, Session } from 'better-sse';
 import { environment as config } from '../environments/environment';
-
-import tuesdayTriviaAnalyzer from './tuesday-trivia-analyzer';
 import { analyze as analyzeMafiaEmail } from './trivia-mafia-analyzer';
 import RestError from './resterror';
 import * as days from '@trivia-nx/days';
 import { isUserActive, userFull } from '@trivia-nx/users';
-import shareSocketIo from './sharesocketio';
 import { EditAnswerData, EditGradeData, GetQuestionsData, QuestionWire, SubmitGradesData, SubmitGuessData } from '@trivia-nx/types';
 import { TriviaStorage } from '@trivia-nx/triv-storage';
 
@@ -44,6 +42,30 @@ async function getFullQuestions(earliestDay: string, latestDay: string) {
 
 router.use(json()); 
 router.use(urlencoded({extended: false}));
+
+
+interface SessionEntry {
+   session: Session;
+   user: userFull;
+}
+
+let allSessions: SessionEntry[] = [];
+
+router.get('/sse', async (request: RequestFor<void>, response) => {
+   const session = await createSession(request, response);
+   const user = request.user;
+   allSessions.push({
+      session,
+      user
+   });
+   console.log(`SSE session with ${user?.username ?? '<guest>'} st arted`);
+
+   session.on('disconnected', () => {
+      allSessions = allSessions.filter((entry) => entry.session !== session);
+      console.log(`SSE session with ${user?.username ?? '<guest>'} en ded`);
+   });
+
+});
 
 router.get('/whoami', function(request: RequestFor<void>, response: Response) {
    if (request.user) {
@@ -152,7 +174,8 @@ function userRequired(request) {
 }
 
 interface RequestFor<T> extends Request {
-   body: T
+   body: T,
+   user: userFull
 }
 
 router.put('/guess', userRequired, async function(request: RequestFor<SubmitGuessData>, response) {
@@ -165,11 +188,13 @@ router.put('/guess', userRequired, async function(request: RequestFor<SubmitGues
    response.json(question);
 });
 
-router.post('/comments/add', userRequired, async function(request, response) {
+/*
+router.post('/comments/add', userRequired, async function(request: RequestFor<any>, response) {
    const body = request.body;
    await storage.insertComment(body.day, request.user.userid, body.comment);
    response.json({});
 });
+*/
 
 function messageSlack(message: string) {
    const data = {
@@ -188,7 +213,7 @@ async function afterGuess(day: string, userGuessing: number) {
    const question = questions[0];
    const users = await storage.getUsers();
    
-   sendSocketUpdates(question, userGuessing);
+   await sendSocketUpdates(question, userGuessing);
 
    if (allUsersGuessed(question, users)) {
       const guessesMsg = question.guesses.map(function(guess) {
@@ -216,16 +241,25 @@ function joinNames(names: string[]) {
    return s + names[last];
 }
 
-function sendSocketUpdates(question: QuestionWire, skipUserId: number)
+async function sendSocketUpdates(question: QuestionWire, skipUserId: number)
 {
-   const hasGuessed = new Set(question.guesses.map(g => g.userid));
-   
-   for (const socket of shareSocketIo.io.of('/').sockets.values()) {
-      const socketUserid = socket.userid;
-      if (socketUserid && socketUserid !== skipUserId && hasGuessed.has(socketUserid)) {
-         socket.emit('day_data', question);
-      }
+   const users = await storage.getUsers();
+   if (question.a && allUsersGuessed(question, users)) {
+      allSessions.forEach((sessionEntry) => {
+         const userId = sessionEntry.user?.userid ?? 0;
+         if (sessionEntry.session.isConnected && userId !== skipUserId) {
+            sessionEntry.session.push(question);
+         } 
+      });
+      return;
    }
+   const userIdsThatHaveGuessed = new Set(question.guesses.map((guess) => guess.userid));
+   allSessions.forEach((sessionEntry) => {
+      const userId = sessionEntry.user?.userid ?? 0;
+      if (sessionEntry.session.isConnected && userId !== skipUserId && userIdsThatHaveGuessed.has(userId)) {
+         sessionEntry.session.push(question);
+      } 
+   });
 }
 
 async function getUserIdsToNamesMap(): Promise<Map<number, string>> {
@@ -237,7 +271,7 @@ async function afterGrading(day: string, gradingUserid: number) {
    const questions = await getFullQuestions(day, day);
    if (questions.length === 1) {
       const question = questions[0];
-      sendSocketUpdates(question, gradingUserid);
+      await sendSocketUpdates(question, gradingUserid);
       if (question.a && allGraded(question)) {
          const guesses = question.guesses;
          const userNames = await getUserIdsToNamesMap();
@@ -312,7 +346,7 @@ router.put('/editgrade', userRequired, async function(request: RequestFor<EditGr
    if (question) {
       const guess = question.guesses.find(guess => guess.userid === userid);
       if (guess) {
-         sendSocketUpdates(question, request.user.userid);
+         await sendSocketUpdates(question, request.user.userid);
          const userNames = await getUserIdsToNamesMap();
          const userName = userNames.get(userid);
          messageSlack(`Scoring correction for ${question.day}: ${userName}'s answer of "${guess.guess}" is ${correct ? 'right' : 'wrong'}. (Changed by ${request.user.username})`);

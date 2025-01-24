@@ -4,7 +4,7 @@ const pgOptions = {
   user: 'postgres',
   host: 'localhost',
   database: 'postgres',
-  password: process.env.DEV_POSTGRES_PASSWORD
+  password: process.env.NX_DEV_POSTGRES_PASSWORD
 };
 
 export const environment = {

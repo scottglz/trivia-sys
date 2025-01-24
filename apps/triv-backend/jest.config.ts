@@ -1,5 +1,6 @@
-module.exports = {
-  displayName: 'reset-dev-db',
+/* eslint-disable */
+export default {
+  displayName: 'triv-backend',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,5 +12,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/reset-dev-db',
+  coverageDirectory: '../../coverage/apps/triv-backend',
 };

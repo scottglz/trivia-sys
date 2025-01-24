@@ -26,7 +26,7 @@ export function isUserActive(user: userFull, day: string) {
  * Is/Was the user active on any day of the given year
  */
 export function isUserActiveInYear(user: userFull, year: string|number) {
-   const firstDayNum = getDayNumber(year + '-00-00');
+   const firstDayNum = getDayNumber(year + '-01-01');
    const lastDayNum = getDayNumber(year + '-12-31');
    return rangesOverlap(user.activeRanges, firstDayNum, lastDayNum);
 }
